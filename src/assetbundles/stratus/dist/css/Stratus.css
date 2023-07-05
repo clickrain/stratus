@@ -1,0 +1,74 @@
+/**
+ * Stratus plugin for Craft CMS
+ *
+ * Stratus CSS
+ *
+ * @author    Joseph Marikle
+ * @copyright Copyright (c) 2022 Joseph Marikle
+ * @link      clickrain.com
+ * @package   Stratus
+ * @since     1.0.0
+ */
+
+ .stratus-icon-wrap {
+     display: block;
+ }
+
+.stratus-icon {
+    display: inline-block;
+}
+
+.stratus-icon svg {
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.stratus-icon.stratus-bg-yellow svg {
+    fill: #F5A623;
+}
+
+.stratus-icon .stratus-bg-facebook-disapprove svg {
+    /* fill: #E56D6D; */
+    fill: #557385;
+}
+
+.stratus-icon .stratus-bg-facebook-approve svg {
+    fill: #557385;
+}
+
+.stratus-ellipse {
+    display: block;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}
+
+.stratus-rating {
+    display: flex;
+}
+
+.stratus-rating ul {
+    display: flex;
+}
+
+.stratus-rating ul:before {
+    content: '[';
+}
+
+.stratus-rating ul:after {
+    content: ']';
+}
+
+.stratus-rating ul li:not(:last-child):after {
+    content: ',';
+}
+
+.stratus-rating .stratus-icon {
+    width: 2em;
+    text-align: center;
+}
+
+.stratus-rating ul li, .stratus-rating ul:after, .stratus-rating ul:before {margin: 0 0.2em;}

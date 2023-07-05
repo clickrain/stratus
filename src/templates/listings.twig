@@ -1,0 +1,14 @@
+{% extends '_layouts/elementindex' %}
+
+{% do view.registerAssetBundle("clickrain\\stratus\\assetbundles\\stratus\\StratusAsset") %}
+
+{% set title = 'Listings'|t('stratus') %}
+{% set elementType = 'clickrain\\stratus\\elements\\StratusListingElement' %}
+{% set selectedSubnavItem = 'listings' %}
+
+{% if not craft.app.getPlugins().getPlugin('stratus').getSettings().validate() %}
+  {% redirect "settings/plugins/stratus" %}
+{% endif %}
+
+{% set lastPulledAt = craft.stratus.getListingsLastPulledAt %}
+{% set total = craft.stratus.getTotalListingCount %}

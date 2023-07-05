@@ -1,0 +1,12 @@
+{% do view.registerAssetBundle("clickrain\\stratus\\assetbundles\\stratus\\StratusAsset") %}
+
+{% for key, platform in reviewables %}
+<div class="stratus-rating">
+    {{ icons[key]|raw }}
+    <ul>
+    {% for rating in platform.ratings %}
+        <li title="{{rating.name}}">{{ rating.value|default('N/A') }}</li>
+    {% endfor %}
+    </ul>
+</div>
+{% endfor %}

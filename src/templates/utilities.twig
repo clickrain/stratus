@@ -1,0 +1,42 @@
+{% import "_includes/forms" as forms %}
+
+{% if showEmptyState %}
+<p class="zilch">
+    The plugin not configured. Please complete configuration to continue.
+</p>
+{% else %}
+<form id="stratus-utility-interface" class="utility" method="post" accept-charset="UTF-8">
+    {{ csrfInput() }}
+
+    <h2>{{ 'Manually pull data from Stratus'|t('stratus') }}</h2>
+    <p>{{ 'Here you can manualy request data from Stratus.'|t('stratus') }}</p>
+    <div class="pane">
+        {{
+            tag('p', {
+                class: ['warning', 'with-icon'],
+                text: ' Executing a manual pull may take a while depending on how much data needs to be pulled.  Note that this will override existing data.'|t('stratus'),
+            })
+        }}
+    </div>
+
+    <div class="buttons">
+        {{ tag('button', {
+            type: 'submit',
+            class: ['btn', 'submit'],
+            text: 'Pull Listings Data'|t('stratus'),
+            data: {
+                action: 'stratus/default/refresh-listings',
+            },
+        }) }}
+        {{ tag('button', {
+            type: 'submit',
+            class: ['btn', 'submit'],
+            text: 'Pull Reviews Data'|t('stratus'),
+            data: {
+                action: 'stratus/default/refresh-reviews',
+            },
+        }) }}
+        <div class="utility-status"></div>
+    </div>
+</form>
+{% endif %}

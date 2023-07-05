@@ -1,0 +1,42 @@
+{
+    "name": "clickrain/stratus",
+    "description": "Stratus integration for Craft CMS",
+    "type": "craft-plugin",
+    "keywords": ["stratus"],
+    "license": "proprietary",
+    "authors": [
+      {
+        "name": "Click Rain, Inc.",
+        "homepage": "https://clickrain.com"
+      }
+    ],
+    "support": {
+      "email": "craft-plugins@clickrain.com"
+    },
+    "require": {
+      "craftcms/cms": "^4.0.0",
+      "php": "^8.0.2"
+    },
+    "autoload": {
+      "psr-4": {
+        "clickrain\\stratus\\": "src/"
+      }
+    },
+    "extra": {
+      "name": "Stratus",
+      "handle": "stratus",
+      "class": "clickrain\\stratus\\Stratus"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.9",
+        "craftcms/rector": "dev-main"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

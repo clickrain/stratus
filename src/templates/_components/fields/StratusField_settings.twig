@@ -1,0 +1,26 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Stratus plugin for Craft CMS
+ *
+ * StratusField Field Settings
+ *
+ * @author    Joseph Marikle
+ * @copyright Copyright (c) 2022 Joseph Marikle
+ * @link      clickrain.com
+ * @package   Stratus
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+
+{% do view.registerAssetBundle("clickrain\\stratus\\assetbundles\\stratus\\StratusAsset") %}
+
+{#{ forms.textField({
+    label: 'Some Attribute',
+    instructions: 'Enter some attribute here.',
+    id: 'someAttribute',
+    name: 'someAttribute',
+    value: field['someAttribute']})
+}#}

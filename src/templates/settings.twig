@@ -1,0 +1,70 @@
+{# @var craft \craft\web\twig\variables\CraftVariable #}
+{#
+/**
+ * Stratus plugin for Craft CMS 3.x
+ *
+ * Stratus Settings.twig
+ *
+ * @author    Joseph Marikle
+ * @copyright Copyright (c) 2022 Joseph Marikle
+ * @link      clickrain.com
+ * @package   Stratus
+ * @since     1.0.0
+ */
+#}
+
+{% import "_includes/forms" as forms %}
+{% import "_layouts/basecp" as basecp %}
+
+{% do view.registerAssetBundle("clickrain\\stratus\\assetbundles\\stratus\\StratusAsset") %}
+
+<div id="stratus-container">
+    <h2>{{ 'Connect to Stratus'|t('stratus') }}</h2>
+
+    <p>Login to Stratus to automatically configure the plugin and get data via webhooks.
+    If you don't already have an account, you can
+    <a href="https://app.gostratus.io/sign-up?utm_source=craft_partner&amp;utm_medium=referral" target="_blank" rel="noopener">sign up</a>
+    for a free 30-day trial.
+    <div id="save-warning" class="pane hidden">
+        {{
+            tag('p', {
+                class: ['warning', 'with-icon'],
+                text: ' Settings have been updated. Please remember to save these changes.'|t('stratus'),
+            })
+        }}
+    </div>
+
+    <div class="buttons">
+        <button type="button" id="stratus-login" class="btn" data-icon-after="external">{{ 'Login with Stratus'|t('stratus') }}</button>
+        <div id="stratus-login-spinner" class="spinner hidden"></div>
+    </div>
+
+    <hr>
+    <h2>{{ 'Settings'|t('stratus') }}</h2>
+
+    <p>These settings are filled in automatically. Click the “Login with Stratus” button to get started.
+
+    {{ forms.autoSuggestField({
+        label: "API Key"|t('stratus'),
+        name: 'apiKey',
+        value: settings.apiKey,
+        required: true,
+        suggestEnvVars: true
+    }) }}
+
+    {{ forms.autoSuggestField({
+        label: "Webhook Secret"|t('stratus'),
+        name: 'webhookSecret',
+        value: settings.webhookSecret,
+        required: true,
+        suggestEnvVars: true
+    }) }}
+</div>
+
+{% js %}
+(() => {
+    new Craft.Stratus.Login({
+        baseUrl: '{{settings.baseUrl}}',
+    });
+})();
+{% endjs %}

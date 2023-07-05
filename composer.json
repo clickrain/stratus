@@ -2,7 +2,13 @@
     "name": "clickrain/stratus",
     "description": "Stratus integration for Craft CMS",
     "type": "craft-plugin",
-    "keywords": ["stratus"],
+    "keywords": [
+      "craft",
+      "craftcms",
+      "plugin",
+      "stratus",
+      "clickrain"
+    ],
     "license": "proprietary",
     "authors": [
       {

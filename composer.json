@@ -33,16 +33,7 @@
       "handle": "stratus",
       "class": "clickrain\\stratus\\Stratus"
     },
-    "config": {
-        "allow-plugins": {
-            "yiisoft/yii2-composer": true,
-            "craftcms/plugin-installer": true
-        }
-    },
     "require-dev": {
-        "phpstan/phpstan": "^1.9",
-        "craftcms/rector": "dev-main"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+        "phpstan/phpstan": "^1.9"
+    }
 }

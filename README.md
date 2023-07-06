@@ -1,6 +1,6 @@
 
 # Stratus Craft CMS Plugin
-> A plugin for syncing and display Stratus data and in a Craft website
+> A plugin for syncing and displaying Stratus reviews and listing data on your Craft website
 
 ## Prerequisites
 

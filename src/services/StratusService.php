@@ -27,6 +27,16 @@ class StratusService extends Component
     const LISTINGS_CACHE_TAG = 'stratus-listings-pulled-at';
 
     /**
+     * @event Event The event that is triggered after the sync
+     */
+    public const EVENT_AFTER_SYNC = 'afterSync';
+
+    /**
+     * @event Event The event that is triggered before the sync
+     */
+    public const EVENT_BEFORE_SYNC = 'beforeSync';
+
+    /**
      * Import the reviews
      *
      * @param bool $full  ignore the last pulled timestamp and pull all
@@ -216,6 +226,10 @@ class StratusService extends Component
         /** @var \craft\services\Search */
         $searchService = Craft::$app->getSearch();
 
+        Event::trigger(static::class, self::EVENT_BEFORE_SYNC, new Event([
+            'type' => 'listing',
+        ]));
+
         foreach ($listings as $listing) {
             /** @var StratusListingElement */
             $entry = new StratusListingElement();
@@ -261,6 +275,10 @@ class StratusService extends Component
 
             yield $entry;
         }
+
+        Event::trigger(static::class, self::EVENT_AFTER_SYNC, new Event([
+            'type' => 'listing',
+        ]));
     }
 
     public function syncReviews(array $reviews): Generator
@@ -269,6 +287,10 @@ class StratusService extends Component
         $elementsService = Craft::$app->getElements();
         /** @var \craft\services\Search */
         $searchService = Craft::$app->getSearch();
+
+        Event::trigger(static::class, self::EVENT_BEFORE_SYNC, new Event([
+            'type' => 'review',
+        ]));
 
         foreach ($reviews as $review) {
             /** @var StratusReviewElement */
@@ -315,6 +337,10 @@ class StratusService extends Component
 
             yield $entry;
         }
+
+        Event::trigger(static::class, self::EVENT_AFTER_SYNC, new Event([
+            'type' => 'review',
+        ]));
     }
 
 

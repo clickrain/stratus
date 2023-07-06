@@ -21,14 +21,14 @@ You will need an account on Stratus to use this plugin.  If you are a Click Rain
 #### Composer
 
 1. Navigate to the project root directory and run the following command.
-	```bash
-	composer require clickrain/stratus
-	```
+    ```bash
+    composer require clickrain/stratus
+    ```
 
 2. Use the Craft CLI to install the plugin.
-	```bash
-	./craft plugin/install stratus
-	```
+    ```bash
+    ./craft plugin/install stratus
+    ```
 
 ### Generate an API key and webhook secret
 
@@ -43,10 +43,10 @@ You will need an account on Stratus to use this plugin.  If you are a Click Rain
 You can configure the plugin in one of two ways. The first is to use the Craft control panel.  The second is to use environment variables. The latter is recommended for production environments.
 
 1. Add the following environment variables to the `.env` file in the project root directory.
-	```bash
-	STRATUS_API_KEY=<API Key>
-	STRATUS_WEBHOOK_SECRET=whsec_<Webhook Secret>
-	```
+    ```bash
+    STRATUS_API_KEY=<API Key>
+    STRATUS_WEBHOOK_SECRET=whsec_<Webhook Secret>
+    ```
 
 If you did not provide a webhook URL when generating the API key, you will need to configure the Craft project to run the job queue automatically.  You may want to disable `runQueueAutomatically` by setting it to `false` in `config/general.php`.
 
@@ -59,41 +59,41 @@ If you did not provide a webhook URL when generating the API key, you will need 
 ```twig
 {# accessing a listing by its Stratus UUID #}
 craft.stratus
-	.listings({uuid: 'e529a4a3ee1f3a0a47292f391cdbebe74fa72ff2'})
-	.one()
+    .listings({uuid: 'e529a4a3ee1f3a0a47292f391cdbebe74fa72ff2'})
+    .one()
 
 {# accessing a review by its Stratus UUID #}
 craft.stratus
-	.reviews({uuid: 'aec1873c02ecad673af91f2af0f4daaa66fa1887'})
-	.one()
+    .reviews({uuid: 'aec1873c02ecad673af91f2af0f4daaa66fa1887'})
+    .one()
 ```
 ### Access reviews based on their parent listing UUID
 ```twig
 {# by parent Stratus UUID #}
 craft.stratus
-	.reviews({listing: 'e529a4a3ee1f3a0a47292f391cdbebe74fa72ff2'})
-	.all()
+    .reviews({listing: 'e529a4a3ee1f3a0a47292f391cdbebe74fa72ff2'})
+    .all()
 ```
 ### Access reviews associated with an entry by a custom field
 ```twig
 {# asuming the field is named reviews #}
 entry.reviews
-	.all()
+    .all()
 {# access reviews for the first connected listing to the provided entry #}
 entry.listings
-	.one()
-	.reviews
-	.all()
+    .one()
+    .reviews
+    .all()
 ```
 ### Eager loading
 ```twig
 {# listings eager loading their reviews #}
 craft.stratus
-	.listings().with('reviews').all()
+    .listings().with('reviews').all()
 
 {# reviews eager loading their parent listings #}
 craft.stratus
-	.reviews().with('listing').all()
+    .reviews().with('listing').all()
 ```
 
 
@@ -104,28 +104,28 @@ and eager load reviews. Also filter the
 reviews to only ones that are greater
 than 3 stars or recommended (facebook). #}
 set reviews = entry.listings
-	.with([
-		['reviews', {
-			rating: [4,5],
-			recommends: [true],
-		}]
-	]).one()
+    .with([
+        ['reviews', {
+            rating: [4,5],
+            recommends: [true],
+        }]
+    ]).one()
 ```
 ```twig
 {# Filter reviews by platform. supported
 platforms include the following
 
-	google
-	facebook
-	healthgrades
-	google_play_store
-	apple_app_store
-	yelp
-	tripadvisor
-	bbb
-	indeed
-	glassdoor
-	yellow_pages
+    google
+    facebook
+    healthgrades
+    google_play_store
+    apple_app_store
+    yelp
+    tripadvisor
+    bbb
+    indeed
+    glassdoor
+    yellow_pages
     zocdoc
     vitals
     realself
@@ -135,86 +135,137 @@ platforms include the following
 
 #}
 craft.stratus
-	.reviews({platform: 'google'})
-	.all()
+    .reviews({platform: 'google'})
+    .all()
 ```
 ### Display information about reviews
 ```twig
 {% set listing = entry.listings.one() %}
 {% for review in listing.reviews %}
-	<dl class="card p-3">
-		<dt>Platform Published Date</dt>
-		<dd>{{ review.platformPublishedDate|date }}</dd>
-		<dt>Author</dt>
-		<dd>{{ review.author }}</dd>
-		<dt>Rating</dt>
-		<dd>{{ review.icons.rating|raw (review.rating|default('null')) }}</dd>
-		<dt>Recommends</dt>
-		<dd>{{ (review.recommends|default('null')) }}</dd>
-		<dt>Review Content</dt>
-		<dd>{{ review.content }}</dd>
-		<dt>Platform</dt>
-		<dd>
-			<ul>
-				<li>{{review.icons.platform|raw}}</li>
-				<li>{{review.platformName}}</li>
-				<li>{{ review.platform }}</li>
-			</ul>
-		</dd>
-		<dt>Reviewable</dt>
-		<dd>{{ review.reviewableName }} ({{ review.reviewableType }})</dd>
-		<dt>UUIDs</dt>
-		<dd>
-			<ul>
-				<li>{{ review.stratusUuid }} (review)</li>
-				<li>{{ review.stratusParentUuid }} (parent listing)</li>
-			</ul>
-		</dd>
-		<dt>Parent Listing</dt>
-		<dd>{{ review.listing }}</dd>
-	</dl>
+    <dl class="card p-3">
+        <dt>Platform Published Date</dt>
+        <dd>{{ review.platformPublishedDate|date }}</dd>
+        <dt>Author</dt>
+        <dd>{{ review.author }}</dd>
+        <dt>Rating</dt>
+        <dd>{{ review.icons.rating|raw (review.rating|default('null')) }}</dd>
+        <dt>Recommends</dt>
+        <dd>{{ (review.recommends|default('null')) }}</dd>
+        <dt>Review Content</dt>
+        <dd>{{ review.content }}</dd>
+        <dt>Platform</dt>
+        <dd>
+            <ul>
+                <li>{{review.icons.platform|raw}}</li>
+                <li>{{review.platformName}}</li>
+                <li>{{ review.platform }}</li>
+            </ul>
+        </dd>
+        <dt>Reviewable</dt>
+        <dd>{{ review.reviewableName }} ({{ review.reviewableType }})</dd>
+        <dt>UUIDs</dt>
+        <dd>
+            <ul>
+                <li>{{ review.stratusUuid }} (review)</li>
+                <li>{{ review.stratusParentUuid }} (parent listing)</li>
+            </ul>
+        </dd>
+        <dt>Parent Listing</dt>
+        <dd>{{ review.listing }}</dd>
+    </dl>
 {% endfor %}
 ```
 ### Display information about listings
 ```twig
 {% set listing = entry.listings.one() %}
 <dl class="card p-3">
-	<dt>Name</dt>
-	<dd>{{ listing.name }}</dd>
-	<dt>Type</dt>
-	<dd>{{ listing.type }}</dd>
-	<dt>UUIDs</dt>
-	<dd>
-		<ul>
-			<li>{{ listing.stratusUuid }} (listing)</li>
-		</ul>
-	</dd>
-	<dt>Associated Reviews</dt>
-	<dd>
-		<ul>
-			{% for review in listing.reviews %}
-				<li>{{ review }}</li>
-			{% endfor %}
-		</ul>
-	</dd>
-	<dt>Max Rating Overall</dt>
-	<dd>{{ listing.maxRating }}</dd>
-	<dt>Average Rating Overall</dt>
-	<dd>{{ listing.avgRating }}</dd>
-	<dt>Ratings by Platform</dt>
-	<dd>
-		{% for rating in listing.getRatings %}
-			<dl class="p-2">
-				<dt>Platform Name</dt>
-				<dd>{{ rating.name }}</dd>
-				<dt>Average for Platform</dt>
-				<dd>{{ rating.avg }}</dd>
-				<dt>Maximum for Platform</dt>
-				<dd>{{ rating.max }}</dd>
-				<dt>Individual Connection Ratings</dt>
-				<dd>{{ rating.ratings|json_encode }}</dd>
-			</dl>
-		{% endfor %}
-	</dd>
+    <dt>Name</dt>
+    <dd>{{ listing.name }}</dd>
+    <dt>Address</dt>
+    <dd>{{ listing.fullAddress|raw }}</dd>
+    <dt>Address Parts</dt>
+    <dd>
+        <ul>
+            <li>{{ listing.address }}</li>
+            <li>{{ listing.address2 }}</li>
+            <li>{{ listing.city }}</li>
+            <li>{{ listing.state }}</li>
+            <li>{{ listing.zip }}</li>
+        </ul>
+    </dd>
+    <dt>Timezone</dt>
+    <dd>{{ listing.timezone }}</dd>
+    <dt>Phone Number</dt>
+    <dd>{{ listing.phone }}</dd>
+    <dt>Type</dt>
+    <dd>{{ listing.type }}</dd>
+    <dt>UUIDs</dt>
+    <dd>
+        <ul>
+            <li>{{ listing.stratusUuid }} (listing)</li>
+        </ul>
+    </dd>
+    <dt>Associated Reviews</dt>
+    <dd>
+        <ul>
+            {% for review in listing.reviews %}
+                <li>{{review.content}} &mdash; {{ review.author }}</li>
+            {% endfor %}
+        </ul>
+    </dd>
+    <dt>Max Rating Overall</dt>
+    <dd>{{ listing.maxRating }}</dd>
+    <dt>Average Rating Overall</dt>
+    <dd>{{ listing.avgRating }}</dd>
+    <dt>Ratings by Platform</dt>
+    <dd>
+        {% for rating in listing.getRatings %}
+            <dl class="p-2">
+                <dt>Platform Name</dt>
+                <dd>{{ rating.name }}</dd>
+                <dt>Average for Platform</dt>
+                <dd>{{ rating.avg }}</dd>
+                <dt>Maximum for Platform</dt>
+                <dd>{{ rating.max }}</dd>
+                <dt>Individual Connection Ratings</dt>
+                <dd>{{ rating.ratings|json_encode }}</dd>
+            </dl>
+        {% endfor %}
+    </dd>
+
+    <dt>Hours</dt>
+    <dd>
+        {% for dayOfTheWeek, hoursDetails in listing.hours|json_decode %}
+            <strong>{{ dayOfTheWeek }}:</strong>
+            {% if hoursDetails.closed %}
+                Closed
+            {% endif %}
+            {% if hoursDetails['24hr'] %}
+                Open 24 hours
+            {% endif %}
+            {% for period in hoursDetails.periods %}
+                {{ period.open }}
+                {{ period.close }}
+            {% endfor %}
+            <br>
+        {% endfor %}
+    </dd>
+    <dt>Holiday Hours</dt>
+    <dd>
+        {% for holidayHours in listing.holidayHours|json_decode %}
+            <strong>{{ holidayHours.name }} ({{holidayHours.date}}):</strong>
+            {% if holidayHours.closed %}
+                Closed
+            {% endif %}
+            {% if holidayHours['24hr'] %}
+                Open 24 hours
+            {% endif %}
+            {% for period in holidayHours.periods %}
+                {{ period.open }}
+                {{ period.close }}
+            {% endfor %}
+            <br>
+        {% endfor %}
+    </dd>
 </dl>
 ```

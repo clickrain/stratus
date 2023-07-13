@@ -20,6 +20,11 @@ class StratusReview extends \craft\gql\base\ElementArguments
                 'type' => Type::string(),
                 'description' => 'Narrows query results based on uuid.'
             ],
+            'platform' => [
+                'name' => 'platform',
+                'type' => Type::string(),
+                'description' => 'Narrows query results based on platform.'
+            ],
         ]);
     }
 }

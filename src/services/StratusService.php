@@ -9,8 +9,11 @@ use craft\helpers\Diff;
 use clickrain\stratus\elements\db\StratusReviewQuery;
 use clickrain\stratus\elements\StratusListingElement;
 use clickrain\stratus\elements\StratusReviewElement;
+use clickrain\stratus\events\SyncEvent;
 use clickrain\stratus\jobs\ImportListingsTask;
 use clickrain\stratus\jobs\ImportReviewsTask;
+use clickrain\stratus\models\Settings;
+use clickrain\stratus\Stratus;
 use DateTime;
 use Generator;
 use LitEmoji\LitEmoji;
@@ -226,7 +229,7 @@ class StratusService extends Component
         /** @var \craft\services\Search */
         $searchService = Craft::$app->getSearch();
 
-        Event::trigger(static::class, self::EVENT_BEFORE_SYNC, new Event([
+        Event::trigger(static::class, self::EVENT_BEFORE_SYNC, new SyncEvent([
             'type' => 'listing',
         ]));
 
@@ -276,7 +279,7 @@ class StratusService extends Component
             yield $entry;
         }
 
-        Event::trigger(static::class, self::EVENT_AFTER_SYNC, new Event([
+        Event::trigger(static::class, self::EVENT_AFTER_SYNC, new SyncEvent([
             'type' => 'listing',
         ]));
     }
@@ -288,7 +291,7 @@ class StratusService extends Component
         /** @var \craft\services\Search */
         $searchService = Craft::$app->getSearch();
 
-        Event::trigger(static::class, self::EVENT_BEFORE_SYNC, new Event([
+        Event::trigger(static::class, self::EVENT_BEFORE_SYNC, new SyncEvent([
             'type' => 'review',
         ]));
 
@@ -338,7 +341,7 @@ class StratusService extends Component
             yield $entry;
         }
 
-        Event::trigger(static::class, self::EVENT_AFTER_SYNC, new Event([
+        Event::trigger(static::class, self::EVENT_AFTER_SYNC, new SyncEvent([
             'type' => 'review',
         ]));
     }

@@ -95,20 +95,6 @@ class DefaultController extends Controller
         return $this->redirectToPostedUrl();
     }
 
-
-
-    /**
-     * Pulls listings from stratus into the local database.
-     *
-     * @return Response
-     */
-    public function actionPerformUtilityAction(): Response
-    {
-        return $this->asSuccess('success', [
-            'message' => 'Hello there'
-        ]);
-    }
-
     /**
      * Get the stratus service
      *

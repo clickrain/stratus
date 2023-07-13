@@ -119,6 +119,16 @@ class StratusListing extends \craft\gql\interfaces\Element
                     'description' => '',
                     'complexity' => Gql::eagerLoadComplexity(),
                 ],
+                'hours' => [
+                    'name' => 'hours',
+                    'type' => Type::string(),
+                    'description' => ''
+                ],
+                'holidayHours' => [
+                    'name' => 'holidayHours',
+                    'type' => Type::string(),
+                    'description' => ''
+                ],
             ]
         ), self::getName());
     }

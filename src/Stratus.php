@@ -169,6 +169,8 @@ class Stratus extends Plugin
             function (RegisterUrlRulesEvent $event) {
                 $event->rules['cpActionTrigger1'] = 'stratus/default/refresh-reviews';
                 $event->rules['cpActionTrigger2'] = 'stratus/default/refresh-listings';
+
+                $event->rules['stratus/settings'] = 'stratus/settings/index';
             }
         );
 
@@ -374,17 +376,9 @@ class Stratus extends Plugin
         return new Settings();
     }
 
-    /**
-     * Returns the rendered settings HTML, which will be inserted into the content
-     * block on the settings page.
-     *
-     * @return string The rendered settings HTML
-     */
-    protected function settingsHtml(): string
+    public function getSettingsResponse(): mixed
     {
-        return \Craft::$app->getView()->renderTemplate('stratus/settings', [
-            'settings' => $this->getSettings(),
-        ]);
+        return Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('stratus/settings'));
     }
 
     /**
@@ -397,8 +391,8 @@ class Stratus extends Plugin
         $item['subnav'] = [
             'reviews' => ['label' => 'Reviews', 'url' => 'stratus/reviews'],
             'listings' => ['label' => 'Listings', 'url' => 'stratus/listings'],
-            'utility' => ['label' => 'Import Utility', 'url' => UrlHelper::cpUrl('utilities/stratus')],
-            'settings' => ['label' => 'Plugin Settings', 'url' => UrlHelper::cpUrl('settings/plugins/stratus')],
+            'settings' => ['label' => 'Plugin Settings', 'url' => 'stratus/settings'],
+            'utility' => ['label' => 'Utilities → Import', 'url' => 'utilities/stratus'],
         ];
         return $item;
     }

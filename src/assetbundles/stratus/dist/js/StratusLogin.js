@@ -33,10 +33,10 @@
             this.webhookUrl = Craft.getActionUrl('stratus/webhook/handle');
             this.callbackUrl = Craft.getActionUrl('stratus/public/authenticate');
 
-            this.$container = $('#settings-stratus-container');
-            this.$loginButton = this.$container.find('#settings-stratus-login');
-            this.$spinner = this.$container.find('#settings-stratus-login-spinner');
-            this.$saveWarning = this.$container.find("#settings-save-warning");
+            this.$container = $('#stratus-container');
+            this.$loginButton = this.$container.find('#stratus-login');
+            this.$spinner = this.$container.find('#stratus-login-spinner');
+            this.$saveWarning = this.$container.find("#save-warning");
 
             this.addListener(this.$loginButton, 'click', this.onLogin);
         },
@@ -60,8 +60,6 @@
                 try {
                     let urlParams = new URLSearchParams(windowHandle.location.search);
                     params = Object.fromEntries(urlParams);
-
-                    console.dir(Object.assign({}, params));
                 } catch (error) {
                     return
                 }

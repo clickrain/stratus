@@ -1,18 +1,3 @@
-{# @var craft \craft\web\twig\variables\CraftVariable #}
-{#
-/**
- * Stratus plugin for Craft CMS 3.x
- *
- * Stratus Settings.twig
- *
- * @author    Joseph Marikle
- * @copyright Copyright (c) 2022 Joseph Marikle
- * @link      clickrain.com
- * @package   Stratus
- * @since     1.0.0
- */
-#}
-
 {% import "_includes/forms" as forms %}
 {% import "_layouts/basecp" as basecp %}
 
@@ -46,17 +31,19 @@
 
     {{ forms.autoSuggestField({
         label: "API Key"|t('stratus'),
-        name: 'apiKey',
+        name: 'settings[apiKey]',
         value: settings.apiKey,
+        errors: settings.getErrors('apiKey'),
         required: true,
         suggestEnvVars: true
     }) }}
 
     {{ forms.autoSuggestField({
         label: "Webhook Secret"|t('stratus'),
-        name: 'webhookSecret',
+        name: 'settings[webhookSecret]',
         value: settings.webhookSecret,
-        required: true,
+        errors: settings.getErrors('webhookSecret'),
+        required: false,
         suggestEnvVars: true
     }) }}
 </div>

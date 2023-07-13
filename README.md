@@ -6,7 +6,7 @@
 
 ### Stratus account
 
-You will need an account on Stratus to use this plugin.  If you are a Click Rain client, please contact your account manager to get started. Otherwise, please [visit the Stratus help center](https://stratus.crunch.help/en/integrations/craft-cms) to get started.
+You will need an account on Stratus to use this plugin.  Please [visit the Stratus help center](https://stratus.crunch.help/en/integrations/craft-cms) to get started.
 
 ## Installation
 
@@ -235,7 +235,7 @@ craft.stratus
 
     <dt>Hours</dt>
     <dd>
-        {% for dayOfTheWeek, hoursDetails in listing.hours|json_decode %}
+        {% for dayOfTheWeek, hoursDetails in listing.hours %}
             <strong>{{ dayOfTheWeek }}:</strong>
             {% if hoursDetails.closed %}
                 Closed
@@ -252,7 +252,7 @@ craft.stratus
     </dd>
     <dt>Holiday Hours</dt>
     <dd>
-        {% for holidayHours in listing.holidayHours|json_decode %}
+        {% for holidayHours in listing.holidayHours %}
             <strong>{{ holidayHours.name }} ({{holidayHours.date}}):</strong>
             {% if holidayHours.closed %}
                 Closed
@@ -268,4 +268,100 @@ craft.stratus
         {% endfor %}
     </dd>
 </dl>
+```
+
+### GraphQL
+
+```graphql
+query {
+    stratusListings {
+        name
+        type
+        address
+        address2
+        city
+        state
+        zip
+        phone
+        timezone
+        stratusUuid
+        maxRating
+        avgRating
+        ratings
+        reviews
+        hours
+        holidayHours
+    }
+}
+
+query {
+    stratusListing(uuid: "3cab7a2b49654df583d315b3274b646d3ccdda03") {
+        name
+        type
+        address
+        address2
+        city
+        state
+        zip
+        phone
+        timezone
+        stratusUuid
+        maxRating
+        avgRating
+        ratings
+        reviews
+        hours
+        holidayHours
+    }
+}
+
+query {
+    stratusReviews {
+        content
+        platform
+        platformName
+        rating
+        recommends
+        author
+        platformPublishedDate
+        reviewableType
+        reviewableName
+        stratusUuid
+        stratusParentUuid
+        listing
+    }
+}
+
+query {
+    stratusReviews(platform: "facebook") {
+        platformName
+        author
+        content
+    }
+}
+
+query {
+    stratusReviews(listing: "3cab7a2b49654df583d315b3274b646d3ccdda03") {
+        platformName
+        author
+        content
+    }
+}
+
+query {
+    stratusReviews(listing: "3cab7a2b49654df583d315b3274b646d3ccdda03") {
+        platformName
+        author
+        content
+    }
+}
+
+query {
+    stratusReview(uuid: "023d9f6a23685b85ad22f62c01f25c82b9d81800") {
+        platformName
+        author
+        content
+    }
+}
+
 ```

@@ -1,0 +1,15 @@
+{% extends '_layouts/cp' %}
+
+{% set title = 'Stratus Settings'|t('stratus') %}
+{% set selectedSubnavItem = 'settings' %}
+
+{% set crumbs = [
+    { label: 'Stratus'|t('stratus'), url: url('stratus') },
+    { label: 'Settings'|t('stratus'), url: url('stratus/settings') }
+] %}
+
+{% do view.registerAssetBundle("clickrain\\stratus\\assetbundles\\stratus\\StratusAsset") %}
+
+{% block content %}
+    {% include 'stratus/settings/_components/form' %}
+{% endblock %}

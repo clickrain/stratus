@@ -119,17 +119,37 @@ class StratusListingElement extends Element
     /**
      * @var string The hours of the location
      */
-    public $hours;
+    private $_hours;
 
     /**
      * @var string The holiday hours of the location
      */
-    public $holidayHours;
+    public $_holidayHours;
 
     /**
      * @var StratusReviewElement[]|null
      */
     private $_reviews;
+
+    public function getHours(): array
+    {
+        return json_decode($this->_hours, true) ?: [];
+    }
+
+    public function setHours($hours): void
+    {
+        $this->_hours = $hours;
+    }
+
+    public function getHolidayHours(): array
+    {
+        return json_decode($this->_holidayHours, true) ?: [];
+    }
+
+    public function setHolidayHours($hours): void
+    {
+        $this->_holidayHours = $hours;
+    }
 
     /**
      * get the ratings for all connected integrations
@@ -214,6 +234,27 @@ class StratusListingElement extends Element
     }
 
     /**
+     * Get the hours formatted for display as HTML
+     *
+     * @return string
+     */
+    public function getFormattedHours(): string
+    {
+        $hours = json_decode($this->_hours, true) ?: [];
+
+        $hours = array_map(function($day) {
+            $hours = implode(' - ', array_filter([
+                $day['open'] ?? null,
+                $day['close'] ?? null,
+            ]));
+
+            return $day['closed'] ? 'Closed' : $hours;
+        }, $hours);
+
+        return implode('<br>', $hours);
+    }
+
+    /**
      * @inheritdoc
      */
     protected static function defineTableAttributes(): array
@@ -247,7 +288,7 @@ class StratusListingElement extends Element
             case 'hours':
                 // formatted hours
                 try {
-                    $hours = json_decode($this->hours, true);
+                    $hours = json_decode($this->_hours, true);
                 } catch (\Exception $e) {
                     $hours = [];
                 }
@@ -285,7 +326,7 @@ class StratusListingElement extends Element
                         $day['open'] ? date('g:i a', strtotime($day['open'])) : null,
                         $day['close'] ? date('g:i a', strtotime($day['close'])) : null,
                     ]));
-                }, json_decode($this->holidayHours, true)));
+                }, json_decode($this->_holidayHours, true)));
             case 'reviewables':
 
                 $platforms = [
@@ -378,8 +419,8 @@ class StratusListingElement extends Element
                     'zip' => $this->zip,
                     'timezone' => $this->timezone,
                     'phone' => $this->phone,
-                    'hours' => $this->hours ? json_encode($this->hours) : null,
-                    'holidayHours' => $this->holidayHours ? json_encode($this->holidayHours) : null,
+                    'hours' => $this->_hours ? json_encode($this->_hours) : null,
+                    'holidayHours' => $this->_holidayHours ? json_encode($this->_holidayHours) : null,
                     'reviewables' => $this->reviewables ? json_encode($this->reviewables) : null,
                     'stratusUuid' => $this->stratusUuid,
                 ])
@@ -396,8 +437,8 @@ class StratusListingElement extends Element
                     'zip' => $this->zip,
                     'timezone' => $this->timezone,
                     'phone' => $this->phone,
-                    'hours' => $this->hours ? json_encode($this->hours) : null,
-                    'holidayHours' => $this->holidayHours ? json_encode($this->holidayHours) : null,
+                    'hours' => $this->_hours ? json_encode($this->_hours) : null,
+                    'holidayHours' => $this->_holidayHours ? json_encode($this->_holidayHours) : null,
                     'reviewables' => $this->reviewables ? json_encode($this->reviewables) : null,
                     'stratusUuid' => $this->stratusUuid,
                 ], ['id' => $this->id])

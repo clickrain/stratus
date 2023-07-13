@@ -6,6 +6,11 @@
 {% set elementType = 'clickrain\\stratus\\elements\\StratusListingElement' %}
 {% set selectedSubnavItem = 'listings' %}
 
+{% set crumbs = [
+    { label: 'Stratus'|t('stratus'), url: url('stratus') },
+    { label: 'Listings'|t('stratus'), url: url('stratus/listings') }
+] %}
+
 {% if not craft.app.getPlugins().getPlugin('stratus').getSettings().validate() %}
   {% redirect "settings/plugins/stratus" %}
 {% endif %}

@@ -1,6 +1,7 @@
 <?php
 namespace clickrain\stratus\elements;
 
+use clickrain\stratus\elements\conditions\StratusReviewCondition;
 use craft\base\Element;
 use craft\elements\db\ElementQueryInterface;
 use craft\helpers\Component;
@@ -11,6 +12,7 @@ use LitEmoji\LitEmoji;
 use clickrain\stratus\elements\db\StratusReviewQuery;
 use clickrain\stratus\Stratus;
 use Craft;
+use craft\elements\conditions\ElementConditionInterface;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
 use craft\helpers\UrlHelper;
@@ -69,6 +71,15 @@ class StratusReviewElement extends Element
     {
         return new StratusReviewQuery(static::class);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public static function createCondition(): ElementConditionInterface
+    {
+        return Craft::createObject(StratusReviewCondition::class, [static::class]);
+    }
+
 
     /**
      * @var string Original platform identifier
@@ -255,6 +266,12 @@ class StratusReviewElement extends Element
                 'defaultDir' => 'desc',
             ],
             [
+                'label' => \Craft::t('stratus', 'Listing Name'),
+                'orderBy' => ['stratus_listings.name', '[[platformPublishedDate]] DESC'],
+                'attribute' => 'listing',
+                'defaultDir' => 'desc',
+            ],
+            [
                 'label' => \Craft::t('stratus', 'Platform'),
                 'orderBy' => ['stratus_reviews.platform', '[[platformPublishedDate]] DESC'],
                 'attribute' => 'platform',
@@ -285,7 +302,8 @@ class StratusReviewElement extends Element
     protected static function defineTableAttributes(): array
     {
         $attributes = [
-            'listing' => \Craft::t('stratus', 'Parent Listing'),
+            'stratusUuid' => Craft::t('stratus', 'Stratus UUID'),
+            'listing' => \Craft::t('stratus', 'Listing Name'),
             'platformPublishedDate' => \Craft::t('stratus', 'Published Date'),
             'platform' => \Craft::t('stratus', 'Platform'),
             'author' => \Craft::t('stratus', 'Author'),
@@ -294,6 +312,19 @@ class StratusReviewElement extends Element
         ];
 
         return $attributes;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected static function defineDefaultTableAttributes(string $source): array
+    {
+        $tableAttributes = array_keys(static::defineTableAttributes());
+
+        // return all except for the UUIDs
+        return array_filter($tableAttributes, function($attribute) {
+            return !in_array($attribute, ['stratusUuid']);
+        });
     }
 
     /**

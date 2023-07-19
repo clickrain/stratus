@@ -18,6 +18,8 @@ class StratusReviewQuery extends ElementQuery
 
     public $listing;
 
+    public $listingId;
+
     public $uuid;
 
     /**
@@ -67,6 +69,13 @@ class StratusReviewQuery extends ElementQuery
         return $this;
     }
 
+    public function listingId($value)
+    {
+        $this->listingId = $value;
+
+        return $this;
+    }
+
     public function uuid($value)
     {
         $this->uuid = $value;
@@ -78,6 +87,8 @@ class StratusReviewQuery extends ElementQuery
     {
         // join in the reviews table
         $this->joinElementTable('stratus_reviews');
+        $this->subQuery->innerJoin(['stratus_listings' => '{{%stratus_listings}}'], '[[stratus_listings.stratusUuid]] = [[stratus_reviews.stratusParentUuid]]');
+        $this->query->innerJoin(['stratus_listings' => '{{%stratus_listings}}'], '[[stratus_listings.stratusUuid]] = [[stratus_reviews.stratusParentUuid]]');
 
         $this->query->select([
             'stratus_reviews.platform',
@@ -120,6 +131,11 @@ class StratusReviewQuery extends ElementQuery
         if ($this->listing !== null) {
             $this->subQuery
                 ->andWhere(Db::parseParam('stratus_reviews.stratusParentUuid', $this->listing));
+        }
+
+        if ($this->listingId !== null) {
+            $this->subQuery
+                ->andWhere(Db::parseParam('stratus_listings.id', $this->listingId));
         }
 
         if ($this->uuid !== null) {

@@ -131,7 +131,7 @@ class ImportReviewsTask extends BaseJob
             $elementsToRemove = (new StratusReviewElement())
                 ->find()
                 ->where(
-                    ['not in', 'stratusUuid', array_column($reviews, 'uuid')]
+                    ['not in', 'stratus_reviews.stratusUuid', array_column($reviews, 'uuid')]
                 )->all();
 
 

@@ -301,7 +301,7 @@ class StratusService extends Component
             if ($existingEntry = $entry
                 ->find()
                 ->trashed(null)
-                ->where(['stratusUuid' => $review['uuid']])
+                ->where(['stratus_reviews.stratusUuid' => $review['uuid']])
                 ->one()
             ) {
                 /** @var StratusReviewElement */

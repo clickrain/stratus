@@ -22,6 +22,8 @@ class StratusReviewQuery extends ElementQuery
 
     public $uuid;
 
+    public $datePublished;
+
     /**
      * @inheritdoc
      */
@@ -83,6 +85,15 @@ class StratusReviewQuery extends ElementQuery
         return $this;
     }
 
+    /**
+     * @return static
+     */
+    public function datePublished(mixed $value): self
+    {
+        $this->datePublished = $value;
+        return $this;
+    }
+
     protected function beforePrepare(): bool
     {
         // join in the reviews table
@@ -141,6 +152,11 @@ class StratusReviewQuery extends ElementQuery
         if ($this->uuid !== null) {
             $this->subQuery
                 ->andWhere(Db::parseParam('stratus_reviews.stratusUuid', $this->uuid));
+        }
+
+        if ($this->datePublished) {
+            $this->subQuery
+                ->andWhere(Db::parseDateParam('stratus_reviews.platformPublishedDate', $this->datePublished));
         }
 
         return parent::beforePrepare();

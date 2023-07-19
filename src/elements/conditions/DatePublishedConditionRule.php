@@ -3,35 +3,26 @@
 namespace clickrain\stratus\elements\conditions;
 
 use Craft;
-use craft\base\conditions\BaseElementSelectConditionRule;
+use craft\base\conditions\BaseDateRangeConditionRule;
 use craft\base\ElementInterface;
 use craft\elements\conditions\ElementConditionRuleInterface;
 use craft\elements\db\ElementQueryInterface;
 
 use clickrain\stratus\elements\db\StratusReviewQuery;
-use clickrain\stratus\elements\StratusListingElement;
 
 /**
- * Listing query condition.
+ * Date published condition rule.
  *
  * @author Joseph Marikle
  */
-class StratusListingConditionRule extends BaseElementSelectConditionRule implements ElementConditionRuleInterface
+class DatePublishedConditionRule extends BaseDateRangeConditionRule implements ElementConditionRuleInterface
 {
-    /**
-     * @inheritdoc
-     */
-    protected function elementType(): string
-    {
-        return StratusListingElement::class;
-    }
-
     /**
      * @inheritdoc
      */
     public function getLabel(): string
     {
-        return Craft::t('app', 'Listing');
+        return Craft::t('stratus', 'Date Published');
     }
 
     /**
@@ -39,7 +30,7 @@ class StratusListingConditionRule extends BaseElementSelectConditionRule impleme
      */
     public function getExclusiveQueryParams(): array
     {
-        return [];
+        return ['datePublished'];
     }
 
     /**
@@ -48,7 +39,7 @@ class StratusListingConditionRule extends BaseElementSelectConditionRule impleme
     public function modifyQuery(ElementQueryInterface $query): void
     {
         /** @var StratusReviewQuery $query */
-        $query->listingId($this->getElementId());
+        $query->datePublished($this->queryParamValue());
     }
 
     /**
@@ -56,7 +47,6 @@ class StratusListingConditionRule extends BaseElementSelectConditionRule impleme
      */
     public function matchElement(ElementInterface $element): bool
     {
-        /** @var StratusListingElement $element */
-        return $this->matchValue($element);
+        return $this->matchValue($element->datePublished);
     }
 }

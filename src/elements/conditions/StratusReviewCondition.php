@@ -17,7 +17,8 @@ class StratusReviewCondition extends ElementCondition
     protected function conditionRuleTypes(): array
     {
         return [
-            StratusListingConditionRule::class
+            StratusListingConditionRule::class,
+            DatePublishedConditionRule::class
         ];
     }
 }

@@ -272,6 +272,19 @@ class StratusListingElement extends Element
     /**
      * @inheritdoc
      */
+    protected static function defineDefaultTableAttributes(string $source): array
+    {
+        $tableAttributes = array_keys(static::defineTableAttributes());
+
+        // return all except for the UUIDs
+        return array_filter($tableAttributes, function($attribute) {
+            return !in_array($attribute, ['stratusUuid']);
+        });
+    }
+
+    /**
+     * @inheritdoc
+     */
     protected function tableAttributeHtml(string $attribute): string
     {
         switch ($attribute) {

@@ -131,16 +131,6 @@ class Stratus extends Plugin
             'stratus' => StratusService::class,
         ]);
 
-        Craft::$app->view->hook('cp.elements.element', function(&$context, &$handled) {
-            if(
-                isset($context['viewMode']) && $context['viewMode'] === 'table' &&
-                isset($context['element']) && $context['element'] instanceof StratusReviewElement
-            ) {
-                $context['element']->title = $context['element']->stratusUuid;
-            }
-        }, false);
-
-
         Event::on(
             Gc::class,
             Gc::EVENT_RUN,

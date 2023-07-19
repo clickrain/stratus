@@ -9,6 +9,7 @@ use craft\elements\conditions\ElementConditionRuleInterface;
 use craft\elements\db\ElementQueryInterface;
 
 use clickrain\stratus\elements\db\StratusReviewQuery;
+use clickrain\stratus\elements\StratusReviewElement;
 
 /**
  * Date published condition rule.
@@ -47,6 +48,7 @@ class DatePublishedConditionRule extends BaseDateRangeConditionRule implements E
      */
     public function matchElement(ElementInterface $element): bool
     {
-        return $this->matchValue($element->datePublished);
+        /** @var StratusReviewElement $element */
+        return $this->matchValue($element->platformPublishedDate);
     }
 }

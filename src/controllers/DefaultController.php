@@ -10,12 +10,15 @@
 
 namespace clickrain\stratus\controllers;
 
+use clickrain\stratus\elements\StratusListingElement;
+use clickrain\stratus\elements\StratusReviewElement;
 use clickrain\stratus\services\StratusService;
 use clickrain\stratus\Stratus;
 
 use Craft;
 use craft\web\Controller;
 use yii\base\Response;
+use yii\web\NotFoundHttpException;
 
 /**
  * Default Controller
@@ -93,6 +96,29 @@ class DefaultController extends Controller
         }
 
         return $this->redirectToPostedUrl();
+    }
+
+    public function actionDetails(): Response
+    {
+        /** @var \craft\web\CpScreenResponseBehavior $screen */
+        $screen = $this->asCpScreen();
+        $type = Craft::$app->getRequest()->getRequiredParam('elementType');
+        $id = Craft::$app->getRequest()->getRequiredParam('elementId');
+
+        /** @var \craft\elements\db\ElementQuery */
+        $elementQuery = (new $type)->find();
+
+        /** @var \craft\base\Element */
+        $element = $elementQuery->id($id)->one();
+
+        // return not found error
+        if (!$element) {
+            throw new NotFoundHttpException('Element not found');
+        }
+
+        return $screen->contentTemplate('stratus/_components/ElementDetails', [
+            'details' => $element->getDetails(),
+        ]);
     }
 
     /**

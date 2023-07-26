@@ -11,11 +11,11 @@
  */
 
  .stratus-icon-wrap {
-     display: block;
+     display: flex;
  }
 
 .stratus-icon {
-    display: inline-block;
+    display: block;
 }
 
 .stratus-icon svg {

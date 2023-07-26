@@ -1,0 +1,14 @@
+<div class="readable">
+    <h2>{{ "Review Details"|t('stratus') }}</h2>
+
+    <table class="data fullwidth fixed-layout" dir="ltr">
+        <tbody>
+            {% for label, value in details %}
+            <tr>
+                <th class="light">{{ label|t('stratus') }}</th>
+                <td>{{ value }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

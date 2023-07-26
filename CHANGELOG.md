@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.2
+
+### Added
+
+- Added details slideout to listing and review list views
+
+### Fixed
+
+- Fixed graphql issue
+
 ## 1.0.1
 
 ### Added

@@ -262,7 +262,9 @@ class StratusListingElement extends Element
         $attributes = [
             'stratusUuid' => Craft::t('stratus', 'Stratus UUID'),
             'address' => Craft::t('stratus', 'Address'),
+            'timezone' => Craft::t('stratus', 'Time Zone'),
             'hours' => Craft::t('stratus', 'Hours'),
+            'holidayHours' => Craft::t('stratus', 'Holiday Hours'),
             'reviewables' => Craft::t('stratus', 'Ratings'),
         ];
 
@@ -275,10 +277,15 @@ class StratusListingElement extends Element
     protected static function defineDefaultTableAttributes(string $source): array
     {
         $tableAttributes = array_keys(static::defineTableAttributes());
+        $excludeByDefault = [
+            'timezone',
+            'stratusUuid',
+            'holidayHours'
+        ];
 
         // return all except for the UUIDs
-        return array_filter($tableAttributes, function($attribute) {
-            return !in_array($attribute, ['stratusUuid']);
+        return array_filter($tableAttributes, function($attribute) use ($excludeByDefault) {
+            return !in_array($attribute, $excludeByDefault);
         });
     }
 
@@ -295,9 +302,9 @@ class StratusListingElement extends Element
             case 'address':
                 return $this->getFullAddress();
             case 'phone':
-                return $this->phone;
+                return $this->phone ?? '';
             case 'timezone':
-                return $this->timezone;
+                return $this->timezone ?? '';
             case 'hours':
                 // formatted hours
                 try {
@@ -324,22 +331,24 @@ class StratusListingElement extends Element
                     $result .= '<br>';
                     return $result;
                 }, '');
-            case 'holiday_hours':
-                return implode('<br>', array_map(function($day, $index) {
-                    $daysOfTheWeek = [
-                        'Sunday',
-                        'Monday',
-                        'Tuesday',
-                        'Wednesday',
-                        'Thursday',
-                        'Friday',
-                        'Saturday',
-                    ];
-                    return $day['name'] . ' ' . implode(' - ', array_filter([
-                        $day['open'] ? date('g:i a', strtotime($day['open'])) : null,
-                        $day['close'] ? date('g:i a', strtotime($day['close'])) : null,
-                    ]));
-                }, json_decode($this->_holidayHours, true)));
+            case 'holidayHours':
+                return implode('<br>', array_map(function($day) {
+                    $name = $day['holiday'] === 'custom' ? date('F j, Y', strtotime($day['date'])) : $day['name'];
+
+                    if ($day['closed']) {
+                        return $name . ': Closed';
+                    }
+
+                    if ($day['24hr']) {
+                        return $name . ': Open 24 Hours';
+                    }
+
+                    return $name . ': ' . implode(', ', array_map(function ($period) {
+                        $open = date('g:i A', strtotime($period['open']));
+                        $close = date('g:i A', strtotime($period['close']));
+                        return $open . ' - ' . $close;
+                    }, $day['periods'] ?: []));
+                }, $this->holidayHours));
             case 'reviewables':
 
                 $platforms = [
@@ -616,5 +625,25 @@ class StratusListingElement extends Element
     public function setReviews(array $listing = null)
     {
         $this->_reviews = $listing;
+    }
+
+    public function getDetails(): array
+    {
+        return [
+            'Listing Details' => [
+                'Name' => $this->name,
+                'Address' => $this->tableAttributeHtml('address'),
+                'Phone' => $this->phone,
+                'Time Zone' => $this->timezone,
+                'Hours' => $this->tableAttributeHtml('hours'),
+                'Holiday Hours' => $this->tableAttributeHtml('holidayHours'),
+            ],
+            'System Details' => [
+                'Craft ID' => $this->id,
+                'Craft UID' => $this->uid,
+                'Stratus UUID' => $this->stratusUuid,
+                'Type' => $this->type,
+            ],
+        ];
     }
 }

@@ -1,0 +1,15 @@
+<div class="readable">
+    {% for heading, section in details %}
+    <h2>{{ heading|t('stratus') }}</h2>
+    <table class="data fullwidth fixed-layout collapsible" dir="ltr">
+        <tbody>
+            {% for label, value in section %}
+            <tr>
+                <th class="light">{{ label|t('stratus') }}</th>
+                <td>{{ value|raw }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endfor %}
+</div>

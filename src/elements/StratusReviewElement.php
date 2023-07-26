@@ -650,4 +650,25 @@ class StratusReviewElement extends Element
         );
     }
 
+    public function getDetails(): array
+    {
+        return [
+            'Review Details' => [
+                'Listing' => $this->getListing() ? Html::a($this->getListing()->name, UrlHelper::cpUrl('stratus/listings?source=*&search=' . $this->stratusParentUuid)) : '(none)',
+                'Platform' => Html::tag('div', $this->_buildPlatformHtml() . ' (' . $this->platformName . ')', ['class' => 'flex']),
+                'Rating' => Html::tag('div', $this->_buildRatingHtml() . ' (' . ($this->recommends !== null ? ($this->recommends ? 'recommended' : 'not recommended') : '') . ($this->recommends === null ? $this->rating . ' star rating' : '') . ')', ['class' => 'flex']),
+                'Author' => $this->author,
+                'Content' => $this->content,
+                'Date Published' => Craft::$app->getFormatter()->asDate($this->platformPublishedDate),
+            ],
+            'System Details' => [
+                'Craft ID' => $this->id,
+                'Craft UID' => $this->uid,
+                'Stratus UUID' => $this->stratusUuid,
+                'Stratus Parent UUID' => $this->stratusParentUuid,
+                'Reviewable Type' => Craft::t('stratus', $this->reviewableType),
+                'Reviewable Name' => $this->reviewableName,
+            ],
+        ];
+    }
 }

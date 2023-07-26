@@ -12,6 +12,7 @@ namespace clickrain\stratus;
 
 use clickrain\stratus\elements\StratusListingElement;
 use clickrain\stratus\elements\StratusReviewElement;
+use clickrain\stratus\elements\actions\Details;
 use clickrain\stratus\fields\StratusListingField;
 use clickrain\stratus\gql\queries\Stratus as StratusGqlQuery;
 use clickrain\stratus\gql\interfaces\elements\StratusListing as StratusListingInterface;
@@ -160,6 +161,8 @@ class Stratus extends Plugin
                 $event->rules['cpActionTrigger1'] = 'stratus/default/refresh-reviews';
                 $event->rules['cpActionTrigger2'] = 'stratus/default/refresh-listings';
 
+                $event->rules['startus/details'] = 'stratus/default/details';
+
                 $event->rules['stratus/settings'] = 'stratus/settings/index';
             }
         );
@@ -267,7 +270,9 @@ class Stratus extends Plugin
             StratusReviewElement::class,
             Element::EVENT_REGISTER_ACTIONS,
             function(RegisterElementActionsEvent $event) {
-                $event->actions = [];
+                $event->actions = [
+                    Details::class,
+                ];
             }
         );
 
@@ -275,7 +280,9 @@ class Stratus extends Plugin
             StratusListingElement::class,
             Element::EVENT_REGISTER_ACTIONS,
             function(RegisterElementActionsEvent $event) {
-                $event->actions = [];
+                $event->actions = [
+                    Details::class,
+                ];
             }
         );
 

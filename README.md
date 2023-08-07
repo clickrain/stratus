@@ -108,6 +108,7 @@ set reviews = entry.listings
         ['reviews', {
             rating: [4,5],
             recommends: [true],
+            content: ['not :empty:'],
         }]
     ]).one()
 ```

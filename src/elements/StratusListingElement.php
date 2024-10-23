@@ -348,7 +348,7 @@ class StratusListingElement extends Element
                         $close = date('g:i A', strtotime($period['close']));
                         return $open . ' - ' . $close;
                     }, $day['periods'] ?: []));
-                }, $this->holidayHours));
+                }, $this->getHolidayHours()));
             case 'reviewables':
 
                 $platforms = [

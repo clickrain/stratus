@@ -1,5 +1,11 @@
 # Release Notes for Stratus Online Reviews
 
+## 1.0.4 - 2024-10-23
+
+### Changed
+
+- Preparation for Craft 5 version
+
 ## 1.0.3 - 2023-08-07
 
 ### Added

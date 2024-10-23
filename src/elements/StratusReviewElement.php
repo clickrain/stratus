@@ -13,8 +13,10 @@ use clickrain\stratus\elements\db\StratusReviewQuery;
 use clickrain\stratus\Stratus;
 use Craft;
 use craft\elements\conditions\ElementConditionInterface;
+use craft\elements\db\EagerLoadPlan;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\models\FieldLayout;
 use craft\models\FieldLayoutTab;
@@ -243,7 +245,7 @@ class StratusReviewElement extends Element
         return $sources;
     }
 
-    protected static function defineFieldLayouts(string $source): array
+    protected static function defineFieldLayouts(?string $source): array
     {
         return Craft::$app->getFields()->getLayoutsByType(static::class);
     }
@@ -438,17 +440,17 @@ class StratusReviewElement extends Element
     /**
      * @inheritdoc
      */
-    public function setEagerLoadedElements(string $handle, array $elements): void
+    public function setEagerLoadedElements(string $handle, array $elements, EagerLoadPlan $plan): void
     {
         if ($handle === 'listing') {
             $listing = $elements[0] ?? null;
             $this->setListing($listing);
         } else {
-            parent::setEagerLoadedElements($handle, $elements);
+            parent::setEagerLoadedElements($handle, $elements, $plan);
         }
     }
 
-    protected function tableAttributeHtml(string $attribute): string
+    protected function attributeHtml(string $attribute): string
     {
         switch ($attribute) {
             case 'rating':
@@ -461,7 +463,7 @@ class StratusReviewElement extends Element
                 return "{$this->reviewableName} ({$this->reviewableType})";
 
             case 'content':
-                return LitEmoji::shortcodeToEntities($this->content) ?: '(none)';
+                return LitEmoji::shortcodeToEntities((string) $this->content) ?: '(none)';
 
             case 'listing':
                 if ($this->_listing === null && !$this->getListing()) {
@@ -470,7 +472,7 @@ class StratusReviewElement extends Element
                 return Html::a($this->_listing->name, UrlHelper::cpUrl('stratus/listings?source=*&search=' . $this->stratusParentUuid));
         }
 
-        return parent::tableAttributeHtml($attribute);
+        return parent::attributeHtml($attribute);
     }
 
     /**
@@ -608,16 +610,16 @@ class StratusReviewElement extends Element
         $svgElements = [];
 
         if ($this->rating) {
-            $svgElements = array_pad($svgElements, $this->rating, Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_black_24dp.svg', 'rating'));
-            $svgElements = array_pad($svgElements, 5, Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_outline_black_24dp.svg', 'rating'));
+            $svgElements = array_pad($svgElements, $this->rating, Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_black_24dp.svg', 'rating'));
+            $svgElements = array_pad($svgElements, 5, Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_outline_black_24dp.svg', 'rating'));
         }
 
         if ($this->recommends !== null) {
             $svgElements[] = $this->recommends
-                ? Html::tag('span', Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_up_black_24dp.svg', 'rating'), [
+                ? Html::tag('span', Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_up_black_24dp.svg', 'rating'), [
                         'class' => 'stratus-bg-facebook-approve'
                     ])
-                : Html::tag('span', Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_down_black_24dp.svg', 'rating'), [
+                : Html::tag('span', Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_down_black_24dp.svg', 'rating'), [
                         'class' => 'stratus-bg-facebook-disapprove'
                     ]);
         }
@@ -643,7 +645,7 @@ class StratusReviewElement extends Element
     protected function _buildPlatformHtml($extraCssClass = [])
     {
         return Html::tag('span',
-            Html::tag('span', Component::iconSvg("@clickrain/stratus/assetbundles/stratus/dist/img/{$this->platform}-icon.svg", 'rating'), [
+            Html::tag('span', Cp::iconSvg("@clickrain/stratus/assetbundles/stratus/dist/img/{$this->platform}-icon.svg", 'rating'), [
                 'class' => ['stratus-icon'],
             ]),
             ['class' => array_merge(['stratus-icon-wrap'], $extraCssClass)]

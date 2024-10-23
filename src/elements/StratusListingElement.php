@@ -9,7 +9,9 @@ use clickrain\stratus\elements\db\StratusListingQuery;
 use clickrain\stratus\Stratus;
 use Craft;
 use craft\db\Query;
+use craft\elements\db\EagerLoadPlan;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Cp;
 
 class StratusListingElement extends Element
 {
@@ -292,7 +294,7 @@ class StratusListingElement extends Element
     /**
      * @inheritdoc
      */
-    protected function tableAttributeHtml(string $attribute): string
+    protected function attributeHtml(string $attribute): string
     {
         switch ($attribute) {
             case 'name':
@@ -376,7 +378,7 @@ class StratusListingElement extends Element
                     'icons' => array_combine(
                         $platforms,
                         array_map(function($platform) {
-                            return Html::tag('span', Component::iconSvg("@clickrain/stratus/assetbundles/stratus/dist/img/{$platform}-icon.svg", 'rating'), [
+                            return Html::tag('span', Cp::iconSvg("@clickrain/stratus/assetbundles/stratus/dist/img/{$platform}-icon.svg", 'rating'), [
                                 'class' => ['stratus-icon'],
                             ]);
                         }, $platforms)
@@ -384,7 +386,7 @@ class StratusListingElement extends Element
                 ]);
         }
 
-        return parent::tableAttributeHtml($attribute);
+        return parent::attributeHtml($attribute);
     }
 
     /**
@@ -564,13 +566,13 @@ class StratusListingElement extends Element
     /**
      * @inheritdoc
      */
-    public function setEagerLoadedElements(string $handle, array $elements): void
+    public function setEagerLoadedElements(string $handle, array $elements, EagerLoadPlan $plan): void
     {
         if ($handle === 'reviews') {
             $reviews = $elements ?: null;
             $this->setReviews($reviews);
         } else {
-            parent::setEagerLoadedElements($handle, $elements);
+            parent::setEagerLoadedElements($handle, $elements, $plan);
         }
     }
 
@@ -632,11 +634,11 @@ class StratusListingElement extends Element
         return [
             'Listing Details' => [
                 'Name' => $this->name,
-                'Address' => $this->tableAttributeHtml('address'),
+                'Address' => $this->attributeHtml('address'),
                 'Phone' => $this->phone,
                 'Time Zone' => $this->timezone,
-                'Hours' => $this->tableAttributeHtml('hours'),
-                'Holiday Hours' => $this->tableAttributeHtml('holidayHours'),
+                'Hours' => $this->attributeHtml('hours'),
+                'Holiday Hours' => $this->attributeHtml('holidayHours'),
             ],
             'System Details' => [
                 'Craft ID' => $this->id,

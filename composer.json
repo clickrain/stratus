@@ -35,5 +35,11 @@
     },
     "require-dev": {
         "phpstan/phpstan": "^1.9"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
     }
 }

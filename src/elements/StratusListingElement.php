@@ -353,25 +353,7 @@ class StratusListingElement extends Element
                 }, $this->getHolidayHours()));
             case 'reviewables':
 
-                $platforms = [
-                    'google',
-                    'facebook',
-                    'healthgrades',
-                    'google_play_store',
-                    'apple_app_store',
-                    'yelp',
-                    'tripadvisor',
-                    'bbb',
-                    'indeed',
-                    'glassdoor',
-                    'yellow_pages',
-                    'zocdoc',
-                    'vitals',
-                    'realself',
-                    'ratemds',
-                    'webmd',
-                    'zillow'
-                ];
+                $platforms = Stratus::getInstance()->stratus->getPlatformIdentifiers();
 
                 return Craft::$app->getView()->renderTemplate('stratus/_components/RatingsSummary', [
                     'reviewables' => json_decode($this->reviewables, true),

@@ -339,4 +339,12 @@ class StratusListingField extends BaseRelationField
 
         return parent::getInputHtml($value, $element);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public static function icon(): string
+    {
+        return 'building';
+    }
 }

@@ -24,7 +24,7 @@ class StratusReviewQuery extends ElementQuery
 
     public $datePublished;
 
-    public $content;
+    public $reviewContent;
 
     public $author;
 
@@ -110,7 +110,7 @@ class StratusReviewQuery extends ElementQuery
             'stratus_reviews.platformName',
             'stratus_reviews.rating',
             'stratus_reviews.recommends',
-            'stratus_reviews.content',
+            'stratus_reviews.reviewContent',
             'stratus_reviews.author',
             'stratus_reviews.platformPublishedDate',
             'stratus_reviews.reviewableType',
@@ -163,9 +163,9 @@ class StratusReviewQuery extends ElementQuery
                 ->andWhere(Db::parseDateParam('stratus_reviews.platformPublishedDate', $this->datePublished));
         }
 
-        if ($this->content !== null) {
+        if ($this->reviewContent !== null) {
             $this->subQuery
-                ->andWhere(Db::parseParam('stratus_reviews.content', $this->content));
+                ->andWhere(Db::parseParam('stratus_reviews.reviewContent', $this->reviewContent));
         }
 
         if ($this->author !== null) {

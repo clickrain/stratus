@@ -334,7 +334,7 @@ query {
 }
 
 query {
-    stratusReviews(platform: "facebook") {
+    stratusReviews(platform: facebook) {
         platformName
         author
         content

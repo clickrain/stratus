@@ -136,7 +136,7 @@ class StratusReviewElement extends Element
     /**
      * @var string|null The review text
      */
-    public $content;
+    public $reviewContent;
 
     /**
      * @var StratusListingElement|null
@@ -159,25 +159,7 @@ class StratusReviewElement extends Element
 
         $sources[] = ['heading' => \Craft::t('stratus', 'By Platform')];
 
-        foreach ([
-            'google',
-            'facebook',
-            'healthgrades',
-            'google_play_store',
-            'apple_app_store',
-            'yelp',
-            'tripadvisor',
-            'bbb',
-            'indeed',
-            'glassdoor',
-            'yellow_pages',
-            'zocdoc',
-            'vitals',
-            'realself',
-            'ratemds',
-            'webmd',
-            'zillow'
-        ] as $platform) {
+        foreach (Stratus::getInstance()->stratus->getPlatformIdentifiers() as $platform) {
             $sources[] = [
                 'key' => "platform:$platform",
                 'label' => $service->getPlatformName($platform),
@@ -252,7 +234,7 @@ class StratusReviewElement extends Element
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['platformName', 'author', 'content', 'reviewableName'];
+        return ['platformName', 'author', 'reviewContent', 'reviewableName'];
     }
 
     /**
@@ -309,7 +291,7 @@ class StratusReviewElement extends Element
             'platformPublishedDate' => \Craft::t('stratus', 'Published Date'),
             'platform' => \Craft::t('stratus', 'Platform'),
             'author' => \Craft::t('stratus', 'Author'),
-            'content' => \Craft::t('stratus', 'Review Text'),
+            'reviewContent' => \Craft::t('stratus', 'Review Text'),
             'rating' => \Craft::t('stratus', 'Rating'),
         ];
 
@@ -462,8 +444,8 @@ class StratusReviewElement extends Element
             case 'reviewable':
                 return "{$this->reviewableName} ({$this->reviewableType})";
 
-            case 'content':
-                return LitEmoji::shortcodeToEntities((string) $this->content) ?: '(none)';
+            case 'reviewContent':
+                return LitEmoji::shortcodeToEntities((string) $this->reviewContent) ?: '(none)';
 
             case 'listing':
                 if ($this->_listing === null && !$this->getListing()) {
@@ -525,7 +507,7 @@ class StratusReviewElement extends Element
                     'platformName' => $this->platformName,
                     'rating' => $this->rating,
                     'recommends' => $this->recommends,
-                    'content' => $this->content,
+                    'reviewContent' => $this->reviewContent,
                     'author' => $this->author,
                     'platformPublishedDate' => Db::prepareValueForDb($this->platformPublishedDate),
                     'reviewableType' => $this->reviewableType,
@@ -660,7 +642,7 @@ class StratusReviewElement extends Element
                 'Platform' => Html::tag('div', $this->_buildPlatformHtml() . ' (' . $this->platformName . ')', ['class' => 'flex']),
                 'Rating' => Html::tag('div', $this->_buildRatingHtml() . ' (' . ($this->recommends !== null ? ($this->recommends ? 'recommended' : 'not recommended') : '') . ($this->recommends === null ? $this->rating . ' star rating' : '') . ')', ['class' => 'flex']),
                 'Author' => $this->author,
-                'Content' => $this->content,
+                'reviewContent' => $this->reviewContent,
                 'Date Published' => Craft::$app->getFormatter()->asDate($this->platformPublishedDate),
             ],
             'System Details' => [
@@ -672,5 +654,10 @@ class StratusReviewElement extends Element
                 'Reviewable Name' => $this->reviewableName,
             ],
         ];
+    }
+
+    public function getContent(): string
+    {
+        return $this->reviewContent;
     }
 }

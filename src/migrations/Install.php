@@ -116,7 +116,7 @@ class Install extends Migration
                     'platformName' => $this->string()->notNull(),
                     'rating' => $this->integer(),
                     'recommends' => $this->boolean(),
-                    'content' => $this->text(),
+                    'reviewContent' => $this->text(),
                     'author' => $this->string(),
                     'platformPublishedDate' => $this->dateTime()->notNull(),
                     'reviewableType' => $this->string()->notNull(),

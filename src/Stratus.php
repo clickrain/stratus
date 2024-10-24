@@ -60,7 +60,7 @@ use yii\caching\TagDependency;
  * @package   Stratus
  * @since     1.0.0
  *
- * @property  StratusService $stratusService
+ * @property  StratusService $stratus
  * @property  Settings $settings
  * @method    Settings getSettings()
  */

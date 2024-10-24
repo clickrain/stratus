@@ -200,7 +200,13 @@ class StratusService extends Component
      */
     public function getPlatformName($platform): string
     {
-        return match ($platform) {
+        $platforms = $this->getPlatforms();
+        return $platforms[$platform] ?? 'Unknown Platform';
+    }
+
+    public function getPlatforms(): array
+    {
+        return [
             'google' => 'Google',
             'facebook' => 'Facebook',
             'healthgrades' => 'Healthgrades',
@@ -218,8 +224,12 @@ class StratusService extends Component
             'ratemds' => 'RateMDs',
             'webmd' => 'WebMD',
             'zillow' => 'Zillow',
-            default => 'Unknown Platform',
-        };
+        ];
+    }
+
+    public function getPlatformIdentifiers(): array
+    {
+        return array_keys($this->getPlatforms());
     }
 
     public function syncListings(array $listings): Generator
@@ -315,7 +325,7 @@ class StratusService extends Component
                 : null;
             $entry->author = $review['author'];
             $entry->platformPublishedDate = new DateTime($review['platform_published_date']);
-            $entry->content = LitEmoji::unicodeToShortcode($review['content'] ?: '');
+            $entry->reviewContent = LitEmoji::unicodeToShortcode($review['content'] ?: '');
             $entry->reviewableType = $review['reviewable_type'];
             $entry->reviewableName = $review['reviewable_name'];
             $entry->stratusUuid = $review['uuid'];

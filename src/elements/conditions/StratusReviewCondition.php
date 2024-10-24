@@ -14,7 +14,7 @@ class StratusReviewCondition extends ElementCondition
     /**
      * @inheritdoc
      */
-    protected function conditionRuleTypes(): array
+    protected function selectableConditionRules(): array
     {
         return [
             StratusListingConditionRule::class,

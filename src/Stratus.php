@@ -60,7 +60,7 @@ use yii\caching\TagDependency;
  * @package   Stratus
  * @since     1.0.0
  *
- * @property  StratusService $stratusService
+ * @property  StratusService $stratus
  * @property  Settings $settings
  * @method    Settings getSettings()
  */
@@ -221,7 +221,7 @@ class Stratus extends Plugin
         // Register our utilities
         Event::on(
             Utilities::class,
-            Utilities::EVENT_REGISTER_UTILITY_TYPES,
+            Utilities::EVENT_REGISTER_UTILITIES,
             function (RegisterComponentTypesEvent $event) {
                 $event->types[] = StratusUtility::class;
             }

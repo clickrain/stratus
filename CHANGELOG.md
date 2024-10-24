@@ -1,5 +1,20 @@
 # Release Notes for Stratus Online Reviews
 
+## 1.1.0 - 2024-10-23
+
+### Breaking Changes
+
+- GraphQL schema has been updated to use an enum for review platform arguments. This change will require updating any queries that filter by platform to use the new enum values. Enum values are a one-to-one match with the string values that were previously used (e.g., `"facebook"` is now `facebook`).
+
+### Added
+
+- Craft 5 support
+- Support for filtering GraphQL queries by multiple platforms simultaneously by passing an array of platform values (e.g., `platform: [facebook, google]`)
+
+### Changed
+
+- Modified how review text is stored to accommodate Craft 5 content field related changes that cuased "content" accessors to break
+
 ## 1.0.4 - 2024-10-23
 
 ### Changed

@@ -20,7 +20,7 @@
       "email": "craft-plugins@clickrain.com"
     },
     "require": {
-      "craftcms/cms": "^4.0.0",
+      "craftcms/cms": "^5.0.0",
       "php": "^8.0.2"
     },
     "autoload": {

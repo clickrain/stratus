@@ -13,8 +13,10 @@ use clickrain\stratus\elements\db\StratusReviewQuery;
 use clickrain\stratus\Stratus;
 use Craft;
 use craft\elements\conditions\ElementConditionInterface;
+use craft\elements\db\EagerLoadPlan;
 use craft\elements\User;
 use craft\helpers\ArrayHelper;
+use craft\helpers\Cp;
 use craft\helpers\UrlHelper;
 use craft\models\FieldLayout;
 use craft\models\FieldLayoutTab;
@@ -134,7 +136,7 @@ class StratusReviewElement extends Element
     /**
      * @var string|null The review text
      */
-    public $content;
+    public $reviewContent;
 
     /**
      * @var StratusListingElement|null
@@ -157,25 +159,7 @@ class StratusReviewElement extends Element
 
         $sources[] = ['heading' => \Craft::t('stratus', 'By Platform')];
 
-        foreach ([
-            'google',
-            'facebook',
-            'healthgrades',
-            'google_play_store',
-            'apple_app_store',
-            'yelp',
-            'tripadvisor',
-            'bbb',
-            'indeed',
-            'glassdoor',
-            'yellow_pages',
-            'zocdoc',
-            'vitals',
-            'realself',
-            'ratemds',
-            'webmd',
-            'zillow'
-        ] as $platform) {
+        foreach (Stratus::getInstance()->stratus->getPlatformIdentifiers() as $platform) {
             $sources[] = [
                 'key' => "platform:$platform",
                 'label' => $service->getPlatformName($platform),
@@ -243,14 +227,14 @@ class StratusReviewElement extends Element
         return $sources;
     }
 
-    protected static function defineFieldLayouts(string $source): array
+    protected static function defineFieldLayouts(?string $source): array
     {
         return Craft::$app->getFields()->getLayoutsByType(static::class);
     }
 
     protected static function defineSearchableAttributes(): array
     {
-        return ['platformName', 'author', 'content', 'reviewableName'];
+        return ['platformName', 'author', 'reviewContent', 'reviewableName'];
     }
 
     /**
@@ -307,7 +291,7 @@ class StratusReviewElement extends Element
             'platformPublishedDate' => \Craft::t('stratus', 'Published Date'),
             'platform' => \Craft::t('stratus', 'Platform'),
             'author' => \Craft::t('stratus', 'Author'),
-            'content' => \Craft::t('stratus', 'Review Text'),
+            'reviewContent' => \Craft::t('stratus', 'Review Text'),
             'rating' => \Craft::t('stratus', 'Rating'),
         ];
 
@@ -438,17 +422,17 @@ class StratusReviewElement extends Element
     /**
      * @inheritdoc
      */
-    public function setEagerLoadedElements(string $handle, array $elements): void
+    public function setEagerLoadedElements(string $handle, array $elements, EagerLoadPlan $plan): void
     {
         if ($handle === 'listing') {
             $listing = $elements[0] ?? null;
             $this->setListing($listing);
         } else {
-            parent::setEagerLoadedElements($handle, $elements);
+            parent::setEagerLoadedElements($handle, $elements, $plan);
         }
     }
 
-    protected function tableAttributeHtml(string $attribute): string
+    protected function attributeHtml(string $attribute): string
     {
         switch ($attribute) {
             case 'rating':
@@ -460,8 +444,8 @@ class StratusReviewElement extends Element
             case 'reviewable':
                 return "{$this->reviewableName} ({$this->reviewableType})";
 
-            case 'content':
-                return LitEmoji::shortcodeToEntities($this->content) ?: '(none)';
+            case 'reviewContent':
+                return LitEmoji::shortcodeToEntities((string) $this->reviewContent) ?: '(none)';
 
             case 'listing':
                 if ($this->_listing === null && !$this->getListing()) {
@@ -470,7 +454,7 @@ class StratusReviewElement extends Element
                 return Html::a($this->_listing->name, UrlHelper::cpUrl('stratus/listings?source=*&search=' . $this->stratusParentUuid));
         }
 
-        return parent::tableAttributeHtml($attribute);
+        return parent::attributeHtml($attribute);
     }
 
     /**
@@ -523,7 +507,7 @@ class StratusReviewElement extends Element
                     'platformName' => $this->platformName,
                     'rating' => $this->rating,
                     'recommends' => $this->recommends,
-                    'content' => $this->content,
+                    'reviewContent' => $this->reviewContent,
                     'author' => $this->author,
                     'platformPublishedDate' => Db::prepareValueForDb($this->platformPublishedDate),
                     'reviewableType' => $this->reviewableType,
@@ -608,16 +592,16 @@ class StratusReviewElement extends Element
         $svgElements = [];
 
         if ($this->rating) {
-            $svgElements = array_pad($svgElements, $this->rating, Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_black_24dp.svg', 'rating'));
-            $svgElements = array_pad($svgElements, 5, Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_outline_black_24dp.svg', 'rating'));
+            $svgElements = array_pad($svgElements, $this->rating, Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_black_24dp.svg', 'rating'));
+            $svgElements = array_pad($svgElements, 5, Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/star_outline_black_24dp.svg', 'rating'));
         }
 
         if ($this->recommends !== null) {
             $svgElements[] = $this->recommends
-                ? Html::tag('span', Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_up_black_24dp.svg', 'rating'), [
+                ? Html::tag('span', Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_up_black_24dp.svg', 'rating'), [
                         'class' => 'stratus-bg-facebook-approve'
                     ])
-                : Html::tag('span', Component::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_down_black_24dp.svg', 'rating'), [
+                : Html::tag('span', Cp::iconSvg('@clickrain/stratus/assetbundles/stratus/dist/img/thumb_down_black_24dp.svg', 'rating'), [
                         'class' => 'stratus-bg-facebook-disapprove'
                     ]);
         }
@@ -643,7 +627,7 @@ class StratusReviewElement extends Element
     protected function _buildPlatformHtml($extraCssClass = [])
     {
         return Html::tag('span',
-            Html::tag('span', Component::iconSvg("@clickrain/stratus/assetbundles/stratus/dist/img/{$this->platform}-icon.svg", 'rating'), [
+            Html::tag('span', Cp::iconSvg("@clickrain/stratus/assetbundles/stratus/dist/img/{$this->platform}-icon.svg", 'rating'), [
                 'class' => ['stratus-icon'],
             ]),
             ['class' => array_merge(['stratus-icon-wrap'], $extraCssClass)]
@@ -658,7 +642,7 @@ class StratusReviewElement extends Element
                 'Platform' => Html::tag('div', $this->_buildPlatformHtml() . ' (' . $this->platformName . ')', ['class' => 'flex']),
                 'Rating' => Html::tag('div', $this->_buildRatingHtml() . ' (' . ($this->recommends !== null ? ($this->recommends ? 'recommended' : 'not recommended') : '') . ($this->recommends === null ? $this->rating . ' star rating' : '') . ')', ['class' => 'flex']),
                 'Author' => $this->author,
-                'Content' => $this->content,
+                'reviewContent' => $this->reviewContent,
                 'Date Published' => Craft::$app->getFormatter()->asDate($this->platformPublishedDate),
             ],
             'System Details' => [
@@ -670,5 +654,10 @@ class StratusReviewElement extends Element
                 'Reviewable Name' => $this->reviewableName,
             ],
         ];
+    }
+
+    public function getContent(): string
+    {
+        return $this->reviewContent;
     }
 }

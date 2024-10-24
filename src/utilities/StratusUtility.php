@@ -28,7 +28,7 @@ class StratusUtility extends Utility
     /**
      * @inheritdoc
      */
-    public static function iconPath(): ?string
+    public static function icon(): ?string
     {
         return Craft::getAlias('@clickrain/stratus/icon-mask.svg');
     }

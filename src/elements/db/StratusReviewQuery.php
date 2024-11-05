@@ -130,12 +130,24 @@ class StratusReviewQuery extends ElementQuery
         }
 
         if ($this->rating !== null || $this->recommends !== null) {
-            $this->subQuery
-                ->andWhere([
-                    'or',
-                    Db::parseParam('stratus_reviews.rating', $this->rating),
-                    Db::parseParam('stratus_reviews.recommends', $this->recommends, '=', false, \yii\db\Schema::TYPE_BOOLEAN),
-                ]);
+            if ($this->rating !== null && $this->recommends !== null) {
+                $this->subQuery
+                    ->andWhere([
+                        'or',
+                        Db::parseParam('stratus_reviews.rating', $this->rating),
+                        Db::parseParam('stratus_reviews.recommends', $this->recommends, '=', false, \yii\db\Schema::TYPE_BOOLEAN),
+                    ]);
+            }
+
+            if ($this->rating !== null && $this->recommends === null) {
+                $this->subQuery
+                    ->andWhere(Db::parseParam('stratus_reviews.rating', $this->rating));
+            }
+
+            if ($this->rating === null && $this->recommends !== null) {
+                $this->subQuery
+                    ->andWhere(Db::parseParam('stratus_reviews.recommends', $this->recommends, '=', false, \yii\db\Schema::TYPE_BOOLEAN));
+            }
         }
 
         if ($this->type !== null) {

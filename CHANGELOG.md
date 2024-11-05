@@ -1,5 +1,11 @@
 # Release Notes for Stratus Online Reviews
 
+## 1.0.5 - 2024-11-05
+
+### Fixed
+
+- fixed issue with reviews not being filtered correctly by rating
+
 ## 1.0.4 - 2024-10-23
 
 ### Changed

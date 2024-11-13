@@ -89,6 +89,7 @@ class ImportListingsTask extends BaseJob
         /** @var \craft\services\Elements */
         $elementsService = Craft::$app->getElements();
 
+        Craft::info('ImportListingsTask starting', __METHOD__);
         try {
             // get listings from Stratus
             $this->setProgress(
@@ -96,6 +97,7 @@ class ImportListingsTask extends BaseJob
                 progress: 0,
                 label: 'Fetching listings'
             );
+            Craft::info('Fetching listings', __METHOD__);
             $listings = $this->_fetchListings();
 
             // find which ones we should remove
@@ -107,6 +109,7 @@ class ImportListingsTask extends BaseJob
 
             // soft delete them
             $total = count($elementsToRemove);
+            Craft::info("Removing $total old listings", __METHOD__);
             foreach ($elementsToRemove as $index => $element) {
                 $this->setProgress(
                     $queue,
@@ -118,6 +121,7 @@ class ImportListingsTask extends BaseJob
 
             // sync valid listings to elements
             $total = count($listings);
+            Craft::info("Syncing $total listings", __METHOD__);
             foreach ($this->_getService()->syncListings($listings) as $index => $listing) {
                 $this->setProgress(
                     $queue,
@@ -129,6 +133,8 @@ class ImportListingsTask extends BaseJob
             // Don’t let an exception block the queue
             Craft::warning("Something went wrong: {$e->getMessage()}", __METHOD__);
         }
+
+        Craft::info('ImportListingsTask finished', __METHOD__);
     }
 
     // Protected Methods

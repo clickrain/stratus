@@ -1,5 +1,11 @@
 # Release Notes for Stratus Online Reviews
 
+## 1.1.2 - 2024-11-13
+
+### Fixed
+
+- Fixed an issue where import tasks were incorrectly deleting reviews outside the scope of the request
+
 ## 1.1.1 - 2024-11-05
 
 ### Fixed

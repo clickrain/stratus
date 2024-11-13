@@ -104,11 +104,10 @@ class ImportReviewsTask extends BaseJob
      */
     public function execute($queue): void
     {
-        /** @var \craft\services\Elements */
-        $elementsService = Craft::$app->getElements();
-
+        Craft::info('ImportReviewsTask job started', __METHOD__);
         try {
             if ($this->fresh) {
+                Craft::info('fresh is set, deleting old records', __METHOD__);
                 $this->setProgress($queue, 0, label: 'Finding old data');
                 $this->_deleteReviewEntries(function($total, $index) use ($queue) {
                     $this->setProgress($queue, $index / $total, label: 'Cleaning up old records');
@@ -118,36 +117,20 @@ class ImportReviewsTask extends BaseJob
             $this->setProgress($queue, 0, label: 'Fetching records');
             $reviews = [];
             if ($this->reviews === null) {
+                Craft::info('no reviews provided to the task, fetching from API', __METHOD__);
                 foreach ($this->_fetchReviews() as $index => $review) {
                     $reviews[] = $review['review'];
                     $this->setProgress($queue, $index / $review['total'], label: 'Fetching records');
                 }
             } else {
+                Craft::info('reviews provided to the task, using those', __METHOD__);
                 $reviews = $this->reviews;
             }
             $this->setProgress($queue, 1, label: 'Fetching records');
 
-            // find which ones we should remove
-            $elementsToRemove = (new StratusReviewElement())
-                ->find()
-                ->where(
-                    ['not in', 'stratus_reviews.stratusUuid', array_column($reviews, 'uuid')]
-                )->all();
-
-
-            // soft delete them
-            $total = count($elementsToRemove);
-            foreach ($elementsToRemove as $index => $element) {
-                $this->setProgress(
-                    $queue,
-                    progress: $index / $total,
-                    label: 'Removing old reviews'
-                );
-                $elementsService->deleteElement($element);
-            }
-
             // sync valid reviews to elements
             $total = count($reviews);
+            Craft::info("Syncing $total reviews", __METHOD__);
             foreach ($this->_getService()->syncReviews($reviews) as $index => $listing) {
                 $this->setProgress(
                     $queue,
@@ -159,6 +142,8 @@ class ImportReviewsTask extends BaseJob
             // Don’t let an exception block the queue
             Craft::warning("Something went wrong: {$e->getMessage()}", __METHOD__);
         }
+
+        Craft::info('ImportReviewsTask job finished', __METHOD__);
     }
 
     // Protected Methods

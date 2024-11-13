@@ -1,6 +1,6 @@
 # Release Notes for Stratus Online Reviews
 
-## 1.0.5 - 2024-11-13
+## 1.0.6 - 2024-11-13
 
 ### Fixed
 

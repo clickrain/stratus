@@ -373,9 +373,7 @@ class StratusService extends Component
         // if there are changes, we need to pull the new data
         if (Diff::compare($settings->toArray(), $oldSettings) === false) {
             Queue::push(job: new ImportListingsTask());
-            Queue::push(job: new ImportReviewsTask([
-                'fresh' => true
-            ]));
+            Queue::push(job: new ImportReviewsTask());
         }
     }
 }

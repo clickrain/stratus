@@ -47,7 +47,7 @@ class Settings extends Model
      *
      * @var string
      */
-    public $baseUrl = 'https://app.gostratus.io';
+    public $baseUrl = '';
 
     /**
      * Account ID within Stratus
@@ -77,7 +77,7 @@ class Settings extends Model
 
     public function getBaseUrl(): string
     {
-        return App::parseEnv($this->baseUrl);
+        return App::parseEnv($this->baseUrl) ?: 'https://app.gostratus.io';
     }
 
     public function getWebhookSecret(): string

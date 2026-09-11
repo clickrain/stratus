@@ -21,7 +21,7 @@
     },
     "require": {
       "craftcms/cms": "^5.0.0",
-      "php": "^8.0.2"
+      "php": "^8.2"
     },
     "autoload": {
       "psr-4": {

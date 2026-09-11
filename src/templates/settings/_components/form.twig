@@ -51,7 +51,7 @@
 {% js %}
 (() => {
     new Craft.Stratus.Login({
-        baseUrl: '{{settings.baseUrl}}',
+        baseUrl: '{{ settings.getBaseUrl() }}',
     });
 })();
 {% endjs %}

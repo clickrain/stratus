@@ -32,6 +32,19 @@ use craft\helpers\App;
  */
 class Settings extends Model
 {
+    /**
+     * Settings that hold credentials, mapped to the environment variable each
+     * should be stored in.
+     *
+     * Plugin settings are written to project config, which is version
+     * controlled and synced between environments, so these are kept in the
+     * environment and referenced by name instead.
+     */
+    public const SECRET_ATTRIBUTES = [
+        'apiKey' => 'STRATUS_API_KEY',
+        'webhookSecret' => 'STRATUS_WEBHOOK_SECRET',
+    ];
+
     // Public Properties
     // =========================================================================
 
@@ -83,6 +96,41 @@ class Settings extends Model
     public function getWebhookSecret(): string
     {
         return App::parseEnv($this->webhookSecret);
+    }
+
+    /**
+     * Returns the environment variable a given secret setting should be stored
+     * in, or null if the setting does not hold a secret.
+     *
+     * @param string $attribute
+     * @return string|null
+     */
+    public function getEnvVarName(string $attribute): ?string
+    {
+        return self::SECRET_ATTRIBUTES[$attribute] ?? null;
+    }
+
+    /**
+     * Returns the secret settings currently held as literal values rather than
+     * as an environment variable reference.
+     *
+     * Anything listed here is stored in project config in plain text.
+     *
+     * @return string[] the attribute names
+     */
+    public function getPlaintextSecrets(): array
+    {
+        $plaintext = [];
+
+        foreach (array_keys(self::SECRET_ATTRIBUTES) as $attribute) {
+            $value = (string)$this->$attribute;
+
+            if ($value !== '' && !str_starts_with($value, '$')) {
+                $plaintext[] = $attribute;
+            }
+        }
+
+        return $plaintext;
     }
 
 

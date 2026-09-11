@@ -3,6 +3,7 @@ namespace clickrain\stratus\services;
 
 use clickrain\stratus\elements\db\StratusListingQuery;
 use Craft;
+use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Queue;
 use craft\helpers\Diff;
@@ -232,6 +233,108 @@ class StratusService extends Component
         return array_keys($this->getPlatforms());
     }
 
+    /**
+     * Move any literal secrets out of the settings and into .env, replacing
+     * them with a reference such as `$STRATUS_API_KEY`.
+     *
+     * Plugin settings are written to project config, which is version
+     * controlled and synced between environments, so a literal API key or
+     * signing secret would be committed and shared. Values that are already a
+     * reference, or empty, are left alone.
+     *
+     * Writing to .env is not possible everywhere — there may be no .env file,
+     * or the filesystem may be read only — so a failure leaves the value as it
+     * was and is reported back to the caller rather than blocking the save.
+     *
+     * @param Settings $settings  modified in place
+     * @return string[] attribute names that could not be moved
+     */
+    public function moveSecretsToEnv(Settings $settings): array
+    {
+        /** @var \craft\services\Config */
+        $configService = Craft::$app->getConfig();
+        $failed = [];
+
+        foreach (Settings::SECRET_ATTRIBUTES as $attribute => $envVar) {
+            $value = (string)$settings->$attribute;
+
+            // Empty, or already a reference such as $STRATUS_API_KEY
+            if ($value === '' || str_starts_with($value, '$')) {
+                continue;
+            }
+
+            try {
+                $configService->setDotEnvVar($envVar, $value);
+                $settings->$attribute = '$' . $envVar;
+            } catch (\Throwable $e) {
+                Craft::warning(sprintf(
+                    'Could not move %s into %s, so it will be stored in project config as plain text: %s',
+                    $attribute,
+                    $envVar,
+                    $e->getMessage()
+                ), __METHOD__);
+
+                $failed[] = $attribute;
+            }
+        }
+
+        return $failed;
+    }
+
+    /**
+     * Find the element already holding a stratusUuid.
+     *
+     * The element queries can only return rows whose element is intact, but the
+     * unique index on stratusUuid covers every row in the table. When those two
+     * disagree — the row survived but its element did not, or the id now belongs
+     * to another element type — the caller would build a new element and the
+     * insert would collide with the index, failing the whole import.
+     *
+     * Looking the id up in the table first keeps the check on the same source of
+     * truth as the constraint. Rows whose element can no longer be resolved are
+     * dropped so the record can be imported cleanly on this pass.
+     *
+     * @param string $table         the element's table, e.g. '{{%stratus_reviews}}'
+     * @param string $elementClass  the element class the table's ids should point at
+     * @param string $uuid          the stratusUuid to look for
+     * @return int|null the id to reuse, or null if there is nothing usable
+     */
+    private function _findIdByUuid(string $table, string $elementClass, string $uuid): ?int
+    {
+        $id = (new Query())
+            ->select(['id'])
+            ->from([$table])
+            ->where(['stratusUuid' => $uuid])
+            ->scalar();
+
+        if (!$id) {
+            return null;
+        }
+
+        $type = (new Query())
+            ->select(['type'])
+            ->from(['{{%elements}}'])
+            ->where(['id' => $id])
+            ->scalar();
+
+        if ($type === $elementClass) {
+            return (int)$id;
+        }
+
+        Craft::warning(sprintf(
+            'Purging orphaned %s row #%d (uuid %s): expected element type %s, found %s.',
+            $table,
+            $id,
+            $uuid,
+            $elementClass,
+            $type === false || $type === null ? 'no element' : $type
+        ), __METHOD__);
+
+        Craft::$app->getDb()->createCommand()->delete($table, ['id' => $id])->execute();
+
+        return null;
+    }
+
     public function syncListings(array $listings): Generator
     {
         /** @var \craft\services\Elements */
@@ -246,14 +349,26 @@ class StratusService extends Component
         foreach ($listings as $listing) {
             /** @var StratusListingElement */
             $entry = new StratusListingElement();
-            if ($existingEntry = $entry
-                ->find()
-                ->trashed(null)
-                ->where(['stratusUuid' => $listing['uuid']])
-                ->one()
-            ) {
-                /** @var StratusListingElement */
-                $entry = $existingEntry;
+            $existingEntry = null;
+            if ($existingId = $this->_findIdByUuid(
+                '{{%stratus_listings}}',
+                StratusListingElement::class,
+                $listing['uuid']
+            )) {
+                /** @var StratusListingElement|null $existingEntry */
+                $existingEntry = StratusListingElement::find()
+                    ->id($existingId)
+                    ->status(null)
+                    ->trashed(null)
+                    ->one();
+
+                if ($existingEntry) {
+                    $entry = $existingEntry;
+                } else {
+                    // The element is intact but filtered out of the query, so
+                    // update it in place rather than inserting a duplicate.
+                    $entry->id = $existingId;
+                }
             }
             $entry->name = $listing['name'];
             $entry->type = $listing['type'];
@@ -308,14 +423,27 @@ class StratusService extends Component
         foreach ($reviews as $review) {
             /** @var StratusReviewElement */
             $entry = new StratusReviewElement();
-            if ($existingEntry = $entry
-                ->find()
-                ->trashed(null)
-                ->where(['stratus_reviews.stratusUuid' => $review['uuid']])
-                ->one()
-            ) {
-                /** @var StratusReviewElement */
-                $entry = $existingEntry;
+            $existingEntry = null;
+            if ($existingId = $this->_findIdByUuid(
+                '{{%stratus_reviews}}',
+                StratusReviewElement::class,
+                $review['uuid']
+            )) {
+                /** @var StratusReviewElement|null $existingEntry */
+                $existingEntry = StratusReviewElement::find()
+                    ->id($existingId)
+                    ->status(null)
+                    ->trashed(null)
+                    ->one();
+
+                if ($existingEntry) {
+                    $entry = $existingEntry;
+                } else {
+                    // The element is intact but filtered out of the query — a
+                    // review whose parent listing hasn't imported yet will not
+                    // resolve. Update in place rather than inserting a duplicate.
+                    $entry->id = $existingId;
+                }
             }
             $entry->platform = $review['platform'];
             $entry->platformName = $this->getPlatformName($review['platform']);

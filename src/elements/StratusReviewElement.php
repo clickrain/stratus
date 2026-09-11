@@ -143,7 +143,7 @@ class StratusReviewElement extends Element
      */
     private $_listing;
 
-    protected static function defineSources(string $context = null): array
+    protected static function defineSources(?string $context = null): array
     {
         /** @var \stratus\services\StratusService */
         $service = Stratus::getInstance()->stratus;
@@ -551,7 +551,7 @@ class StratusReviewElement extends Element
     /**
      * @param StratusListingElement|null $listing
      */
-    public function setListing(StratusListingElement $listing = null)
+    public function setListing(?StratusListingElement $listing = null)
     {
         $this->_listing = $listing;
         $this->stratusParentUuid = $listing->stratusUuid ?? null;

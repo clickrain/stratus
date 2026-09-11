@@ -23,8 +23,22 @@ class SettingsController extends Controller
         if (isset($bodyParams['settings'])) {
             $settings->setAttributes($bodyParams['settings'], false);
 
+            // Keep credentials out of project config, which is version
+            // controlled and synced between environments.
+            $plaintext = Stratus::$plugin->stratus->moveSecretsToEnv($settings);
+
             if ($pluginsService->savePluginSettings(Stratus::$plugin, $settings->getAttributes())) {
-                $sessionService->setNotice(Craft::t('stratus', 'Settings saved.'));
+                if ($plaintext) {
+                    $sessionService->setError(Craft::t('stratus', 'Settings saved, but {names} could not be written to your .env file and will be stored in project config as plain text.', [
+                        'names' => implode(' and ', array_map(
+                            fn(string $attribute) => $settings->getAttributeLabel($attribute),
+                            $plaintext
+                        )),
+                    ]));
+                } else {
+                    $sessionService->setNotice(Craft::t('stratus', 'Settings saved.'));
+                }
+
                 return $this->redirectToPostedUrl();
             }
 

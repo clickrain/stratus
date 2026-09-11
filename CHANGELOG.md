@@ -1,6 +1,6 @@
 # Release Notes for Stratus Online Reviews
 
-## 1.1.5 - Unreleased
+## 1.1.5 - 2026-09-11
 
 ### Fixed
 

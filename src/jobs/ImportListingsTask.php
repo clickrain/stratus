@@ -130,8 +130,19 @@ class ImportListingsTask extends BaseJob
                 );
             }
         } catch (\Throwable $e) {
-            // Don’t let an exception block the queue
-            Craft::warning("Something went wrong: {$e->getMessage()}", __METHOD__);
+            // Don’t let an exception block the queue, but surface it as an
+            // error so failures aren’t silently swallowed into the log.
+            Craft::error(
+                sprintf(
+                    '%s: %s (%s:%d)',
+                    get_class($e),
+                    $e->getMessage(),
+                    $e->getFile(),
+                    $e->getLine()
+                ),
+                __METHOD__
+            );
+            Craft::$app->getErrorHandler()->logException($e);
         }
 
         Craft::info('ImportListingsTask finished', __METHOD__);

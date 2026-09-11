@@ -29,6 +29,20 @@
 
     <p>These settings are filled in automatically. Click the “Login with Stratus” button to get started.
 
+    {% set plaintextSecrets = settings.getPlaintextSecrets() %}
+    {% if plaintextSecrets|length %}
+        <div class="pane">
+            {{ tag('p', {
+                class: ['warning', 'with-icon'],
+                text: 'Important: {names} {verb} stored in project config as plain text. Project config is version controlled and shared between environments, so these credentials will be committed to your repository. Store them in your .env file and reference them here as {example} instead.'|t('stratus', {
+                    names: plaintextSecrets|map(a => settings.getAttributeLabel(a))|join(' and '),
+                    verb: plaintextSecrets|length > 1 ? 'are' : 'is',
+                    example: '$' ~ settings.getEnvVarName(plaintextSecrets|first),
+                }),
+            }) }}
+        </div>
+    {% endif %}
+
     {{ forms.autoSuggestField({
         label: "API Key"|t('stratus'),
         name: 'settings[apiKey]',

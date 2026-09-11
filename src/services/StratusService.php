@@ -234,6 +234,54 @@ class StratusService extends Component
     }
 
     /**
+     * Move any literal secrets out of the settings and into .env, replacing
+     * them with a reference such as `$STRATUS_API_KEY`.
+     *
+     * Plugin settings are written to project config, which is version
+     * controlled and synced between environments, so a literal API key or
+     * signing secret would be committed and shared. Values that are already a
+     * reference, or empty, are left alone.
+     *
+     * Writing to .env is not possible everywhere — there may be no .env file,
+     * or the filesystem may be read only — so a failure leaves the value as it
+     * was and is reported back to the caller rather than blocking the save.
+     *
+     * @param Settings $settings  modified in place
+     * @return string[] attribute names that could not be moved
+     */
+    public function moveSecretsToEnv(Settings $settings): array
+    {
+        /** @var \craft\services\Config */
+        $configService = Craft::$app->getConfig();
+        $failed = [];
+
+        foreach (Settings::SECRET_ATTRIBUTES as $attribute => $envVar) {
+            $value = (string)$settings->$attribute;
+
+            // Empty, or already a reference such as $STRATUS_API_KEY
+            if ($value === '' || str_starts_with($value, '$')) {
+                continue;
+            }
+
+            try {
+                $configService->setDotEnvVar($envVar, $value);
+                $settings->$attribute = '$' . $envVar;
+            } catch (\Throwable $e) {
+                Craft::warning(sprintf(
+                    'Could not move %s into %s, so it will be stored in project config as plain text: %s',
+                    $attribute,
+                    $envVar,
+                    $e->getMessage()
+                ), __METHOD__);
+
+                $failed[] = $attribute;
+            }
+        }
+
+        return $failed;
+    }
+
+    /**
      * Find the element already holding a stratusUuid.
      *
      * The element queries can only return rows whose element is intact, but the

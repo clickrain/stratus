@@ -107,25 +107,21 @@ class WebhookController extends Controller
     protected function verifyRequest(): bool
     {
         $signature = Craft::$app->getRequest()->getHeaders()->get('Signature');
-        $secret = Stratus::$plugin->getSettings()->webhookSecret;
+        $secret = Stratus::$plugin->getSettings()->getWebhookSecret();
         $payload = Craft::$app->getRequest()->getRawBody();
+
+        if (empty($secret)) {
+            throw new Exception('signing secret not set');
+        }
 
         if (!$signature) {
             throw new Exception('failed to find signature');
         }
 
-        try {
-            $signatureChallenge = hash_hmac('sha256', $payload, $secret);
+        $signatureChallenge = hash_hmac('sha256', $payload, $secret);
 
-            if ($signatureChallenge !== $signature) {
-                throw new Exception('signature did not match');
-            }
-        } catch (Exception $exception) {
-            throw new Exception('invalid signature: ' . $exception->getMessage());
-        }
-
-        if (empty($secret)) {
-            throw new Exception('signing secret not set');
+        if (!hash_equals($signatureChallenge, $signature)) {
+            throw new Exception('signature did not match');
         }
 
         return true;

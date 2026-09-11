@@ -470,7 +470,7 @@ class StratusListingElement extends Element
         return ['name', 'stratusUuid'];
     }
 
-    protected static function defineSources(string $context = null): array
+    protected static function defineSources(?string $context = null): array
     {
         $sources = [
             [
@@ -606,7 +606,7 @@ class StratusListingElement extends Element
     /**
      * @param StratusReviewElement[]|null $listing
      */
-    public function setReviews(array $listing = null)
+    public function setReviews(?array $listing = null)
     {
         $this->_reviews = $listing;
     }

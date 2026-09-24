@@ -45,14 +45,6 @@ class StratusReviewElement extends Element
     /**
      * @inheritdoc
      */
-    public static function hasContent(): bool
-    {
-        return true;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public static function hasTitles(): bool
     {
         return false;
@@ -342,7 +334,12 @@ class StratusReviewElement extends Element
         return parent::eagerLoadingMap($sourceElements, $handle);
     }
 
-    public static function gqlTypeNameByContext(mixed $context): string
+    /**
+     * Craft 5 replaced the static gqlTypeNameByContext() with this instance
+     * method. Without it Craft falls back to the short class name, which named
+     * the published GraphQL type 'StratusReviewElement'.
+     */
+    public function getGqlTypeName(): string
     {
         return 'StratusReview';
     }
@@ -515,6 +512,22 @@ class StratusReviewElement extends Element
                     'stratusUuid' => $this->stratusUuid,
                     'stratusParentUuid' => $this->stratusParentUuid,
                 ])
+                ->execute();
+        } else {
+            \Craft::$app->db->createCommand()
+                ->update('{{%stratus_reviews}}', [
+                    'platform' => $this->platform,
+                    'platformName' => $this->platformName,
+                    'rating' => $this->rating,
+                    'recommends' => $this->recommends,
+                    'reviewContent' => $this->reviewContent,
+                    'author' => $this->author,
+                    'platformPublishedDate' => Db::prepareValueForDb($this->platformPublishedDate),
+                    'reviewableType' => $this->reviewableType,
+                    'reviewableName' => $this->reviewableName,
+                    'stratusUuid' => $this->stratusUuid,
+                    'stratusParentUuid' => $this->stratusParentUuid,
+                ], ['id' => $this->id])
                 ->execute();
         }
 

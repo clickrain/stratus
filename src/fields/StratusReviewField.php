@@ -19,7 +19,6 @@ use craft\base\ElementInterface;
 use craft\base\Field;
 use craft\fields\BaseRelationField;
 use craft\helpers\Db;
-use yii\db\Schema;
 use craft\helpers\Json;
 
 /**
@@ -97,22 +96,6 @@ class StratusReviewField extends BaseRelationField
     //     ]);
     //     return $rules;
     // }
-
-    /**
-     * Returns the column type that this field should get within the content table.
-     *
-     * This method will only be called if [[hasContentColumn()]] returns true.
-     *
-     * @return string The column type. [[\yii\db\QueryBuilder::getColumnType()]] will be called
-     * to convert the give column type to the physical one. For example, `string` will be converted
-     * as `varchar(255)` and `string(100)` becomes `varchar(100)`. `not null` will automatically be
-     * appended as well.
-     * @see \yii\db\QueryBuilder::getColumnType()
-     */
-    public function getContentColumnType(): string
-    {
-        return Schema::TYPE_STRING;
-    }
 
     /**
      * Normalizes the field’s value for use.

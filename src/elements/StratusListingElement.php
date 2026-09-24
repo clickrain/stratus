@@ -34,14 +34,6 @@ class StratusListingElement extends Element
     /**
      * @inheritdoc
      */
-    public static function hasContent(): bool
-    {
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public static function hasTitles(): bool
     {
         return false;
@@ -533,14 +525,11 @@ class StratusListingElement extends Element
     }
 
     /**
-     * @inheritdoc
+     * Craft 5 replaced the static gqlTypeNameByContext() with this instance
+     * method. Without it Craft falls back to the short class name, which named
+     * the published GraphQL type 'StratusListingElement'.
      */
-    protected function isEditable(): bool
-    {
-        return false;
-    }
-
-    public static function gqlTypeNameByContext(mixed $context): string
+    public function getGqlTypeName(): string
     {
         return 'StratusListing';
     }

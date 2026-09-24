@@ -366,3 +366,9 @@ query {
 }
 
 ```
+
+## Development
+
+Run the test suite with `composer test`. It starts its own throwaway database
+via `docker-compose.yml`, so Docker is the only prerequisite. See
+[tests/README.md](tests/README.md) for what each suite is protecting against.

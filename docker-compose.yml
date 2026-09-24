@@ -1,0 +1,30 @@
+# Database for the integration test suite.
+#
+# Deliberately not on 3306: a plugin developer almost certainly has a MySQL of
+# their own running for the Craft sites they are working on, and this one gets
+# dropped and recreated on every test run. Override the host port with
+# STRATUS_TEST_DB_PORT if 33061 is also taken.
+#
+#   docker compose up -d --wait
+#   composer test
+#   docker compose down
+
+services:
+  mysql:
+    # Pinned so a local run and a CI run are testing against the same database.
+    image: mysql:8.4
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: stratus_test
+    ports:
+      - "${STRATUS_TEST_DB_PORT:-33061}:3306"
+    # The suite recreates the schema on every run, so nothing here is worth
+    # keeping. Running off tmpfs keeps it fast and leaves no volume behind.
+    tmpfs:
+      - /var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 3s
+      timeout: 5s
+      retries: 20
+      start_period: 10s

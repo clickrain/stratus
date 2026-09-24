@@ -1,5 +1,16 @@
 # Release Notes for Stratus Online Reviews
 
+## 1.2.0 - 2026-09-24
+
+### Changed
+
+- The GraphQL types are named `StratusReview` and `StratusListing` again. Craft 5 removed the hook the plugin used to name them, so since the move to Craft 5 they have been published as `StratusReviewElement` and `StratusListingElement` instead. **If you query Stratus data from a headless front end, check your queries before updating.** Anything that names the concrete type breaks: inline fragments such as `... on StratusReviewElement`, fragment type conditions, and any client code keyed off `__typename`. Queries that only select fields from `stratusReviews` or `stratusListings` are unaffected, as are the `StratusReviewInterface` and `StratusListingInterface` names.
+
+### Fixed
+
+- Fixed review data never updating after its first import. A rating corrected in Stratus, an edited review body, a renamed author or a review moved to another listing all stayed at whatever the values were when the review first arrived, and no amount of re-importing changed them. Listings were never affected, only reviews. Nothing needs doing: the next import writes the current values.
+- Fixed imports stopping with `Column 'uid' cannot be null` when a review arrived before the listing it belongs to. Introduced in 1.1.5. The queue job failed on the first such review, so every record behind it in that batch was never imported.
+
 ## 1.1.5 - 2026-09-11
 
 ### Fixed

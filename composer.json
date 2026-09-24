@@ -28,19 +28,53 @@
         "clickrain\\stratus\\": "src/"
       }
     },
+    "autoload-dev": {
+      "psr-4": {
+        "clickrain\\stratus\\tests\\": "tests/"
+      }
+    },
     "extra": {
       "name": "Stratus",
       "handle": "stratus",
       "class": "clickrain\\stratus\\Stratus"
     },
     "require-dev": {
-        "phpstan/phpstan": "^1.9"
+        "codeception/codeception": "^5.2.0",
+        "codeception/module-asserts": "^3.0.0",
+        "codeception/module-datafactory": "^3.0.0",
+        "codeception/module-yii2": "^1.1.9",
+        "fakerphp/faker": "^1.19.0",
+        "league/factory-muffin": "^3.3.0",
+        "phpstan/phpstan": "^1.9",
+        "vlucas/phpdotenv": "^5.4.1"
     },
     "config": {
         "allow-plugins": {
             "yiisoft/yii2-composer": true,
             "craftcms/plugin-installer": true
         }
+    },
+    "scripts": {
+        "db:up": "docker compose up -d --wait",
+        "db:down": "docker compose down",
+        "test": [
+            "@test:conformance",
+            "@test:integration"
+        ],
+        "test:conformance": "codecept run conformance",
+        "test:integration": [
+            "@db:up",
+            "codecept run integration"
+        ],
+        "phpstan": "phpstan analyse -c phpstan.neon --memory-limit=1G"
+    },
+    "scripts-descriptions": {
+        "db:up": "Start the test database and wait for it to accept connections",
+        "db:down": "Stop and remove the test database",
+        "test": "Run both test suites",
+        "test:conformance": "Check the plugin's Craft API assumptions; needs no database",
+        "test:integration": "Run the suite against a real Craft and database; starts the database first",
+        "phpstan": "Run static analysis"
     },
     "prefer-stable": true
 }

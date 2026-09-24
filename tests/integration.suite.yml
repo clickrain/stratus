@@ -1,0 +1,22 @@
+# Boots a real Craft application against a real database and installs the
+# plugin, so migrations, element saves, queries and GraphQL are exercised the
+# way Craft actually runs them. Requires MySQL; see tests/README.md.
+actor: IntegrationTester
+modules:
+  enabled:
+    - Asserts
+    - \craft\test\Craft
+  config:
+    \craft\test\Craft:
+      configFile: 'tests/_craft/config/test.php'
+      entryUrl: 'https://test.craftcms.test/index.php'
+      projectConfig: {}
+      migrations: []
+      plugins:
+        - class: \clickrain\stratus\Stratus
+          handle: stratus
+      cleanup: true
+      transaction: true
+      dbSetup:
+        clean: true
+        setupCraft: true

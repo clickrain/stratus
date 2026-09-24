@@ -4,3 +4,16 @@ vendor
 .env
 .DS_Store
 composer.lock
+
+# Test run artifacts
+tests/.env
+tests/_output
+tests/_support/_generated
+tests/_craft/storage/logs/*
+!tests/_craft/storage/logs/.gitkeep
+tests/_craft/storage/runtime/*
+!tests/_craft/storage/runtime/.gitkeep
+tests/_craft/storage/config-deltas/
+
+# Craft publishes plugin asset bundles here when the integration suite boots
+cpresources/

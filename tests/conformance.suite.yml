@@ -1,0 +1,6 @@
+# Checks the plugin's assumptions about the Craft API without booting Craft or
+# touching a database, so it runs anywhere and is safe to run on every push.
+actor: ConformanceTester
+modules:
+  enabled:
+    - Asserts

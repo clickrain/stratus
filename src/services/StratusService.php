@@ -3,6 +3,7 @@ namespace clickrain\stratus\services;
 
 use clickrain\stratus\elements\db\StratusListingQuery;
 use Craft;
+use craft\base\ElementInterface;
 use craft\db\Query;
 use craft\helpers\DateTimeHelper;
 use craft\helpers\Queue;
@@ -335,6 +336,28 @@ class StratusService extends Component
         return null;
     }
 
+    /**
+     * Points a fresh element at an existing row so Craft updates it instead of
+     * inserting a duplicate.
+     *
+     * Setting the id alone is not enough. Craft loads the existing element
+     * record and then overwrites its uid from the element, so an element that
+     * has never been saved writes a null uid and the save dies on the not-null
+     * constraint. Carry the uid across too.
+     *
+     * @param ElementInterface $entry the unsaved element to point at $existingId
+     * @param int $existingId the element id to take over
+     */
+    private function _adoptExistingElement(ElementInterface $entry, int $existingId): void
+    {
+        $entry->id = $existingId;
+        $entry->uid = (new Query())
+            ->select(['uid'])
+            ->from(['{{%elements}}'])
+            ->where(['id' => $existingId])
+            ->scalar() ?: null;
+    }
+
     public function syncListings(array $listings): Generator
     {
         /** @var \craft\services\Elements */
@@ -367,7 +390,7 @@ class StratusService extends Component
                 } else {
                     // The element is intact but filtered out of the query, so
                     // update it in place rather than inserting a duplicate.
-                    $entry->id = $existingId;
+                    $this->_adoptExistingElement($entry, $existingId);
                 }
             }
             $entry->name = $listing['name'];
@@ -442,7 +465,7 @@ class StratusService extends Component
                     // The element is intact but filtered out of the query — a
                     // review whose parent listing hasn't imported yet will not
                     // resolve. Update in place rather than inserting a duplicate.
-                    $entry->id = $existingId;
+                    $this->_adoptExistingElement($entry, $existingId);
                 }
             }
             $entry->platform = $review['platform'];

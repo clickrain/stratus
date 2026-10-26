@@ -108,7 +108,7 @@ set reviews = entry.listings
         ['reviews', {
             rating: [4,5],
             recommends: [true],
-            content: ['not :empty:'],
+            reviewContent: ['not :empty:'],
         }]
     ]).one()
 ```
@@ -153,7 +153,7 @@ craft.stratus
         <dt>Recommends</dt>
         <dd>{{ (review.recommends|default('null')) }}</dd>
         <dt>Review Content</dt>
-        <dd>{{ review.content }}</dd>
+        <dd>{{ review.reviewContent }}</dd>
         <dt>Platform</dt>
         <dd>
             <ul>
@@ -210,7 +210,7 @@ craft.stratus
     <dd>
         <ul>
             {% for review in listing.reviews %}
-                <li>{{review.content}} &mdash; {{ review.author }}</li>
+                <li>{{ review.reviewContent }} &mdash; {{ review.author }}</li>
             {% endfor %}
         </ul>
     </dd>
